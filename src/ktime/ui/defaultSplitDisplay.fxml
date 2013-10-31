@@ -1,0 +1,17 @@
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import java.lang.String?>
+
+<GridPane alignment="TOP_LEFT" hgap="10" vgap="10" styleClass="split"
+          GridPane.hgrow="ALWAYS"
+          xmlns:fx="http://javafx.com/fxml">
+    <ImageView fx:id="image" styleClass="splitImage"
+               GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="2">
+    </ImageView>
+    <Text fx:id="name" styleClass="text,splitName" text="Split"
+          GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS"/>
+    <Text fx:id="displayTime" styleClass="text,splitDisplayTime" text="--"
+          GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS"/>
+</GridPane>

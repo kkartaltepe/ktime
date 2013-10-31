@@ -1,0 +1,37 @@
+.root {
+    -fx-background-color: #708090;
+}
+
+.text {
+    -fx-fill: #DDDDDD;
+}
+
+.split {
+    -fx-border-width: 1px 0px 1px 0px;
+    -fx-border-color: #304050;
+    -fx-background-color: inherit;
+}
+.split:hover {
+    -fx-background-color: #8090A0;
+}
+.activeSplit {
+    -fx-background-color: #00AAFF;
+}
+.activeSplit:hover {
+    -fx-background-color: #AADDFF;
+}
+
+/* deal with scrollpane sillyness, background inherit and clear borders*/
+.scroll-pane {
+    -fx-background-color: inherit;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane:focused {
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .corner {
+    -fx-background-insets: 0;
+}

@@ -1,0 +1,6 @@
+*.log
+*.iml
+.idea/*
+lib/*
+out/*
+

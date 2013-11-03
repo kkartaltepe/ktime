@@ -15,12 +15,14 @@ public class RunMetadata {
     public static final String NO_NAME = "-";
     List<String> splitNames;
     List<String> splitImagesUris;
+    int attempts, numSegments;
     boolean displayBestSplits;
 
-    public RunMetadata(int numSplits) {
-        splitImagesUris = new ArrayList<String>(numSplits);
-        splitNames = new ArrayList<String>(numSplits);
-        for (int i = 0; i < numSplits; i++) {
+    public RunMetadata(int numSegments) {
+        this.numSegments = numSegments;
+        splitImagesUris = new ArrayList<String>(numSegments);
+        splitNames = new ArrayList<String>(numSegments);
+        for (int i = 0; i < numSegments; i++) {
             splitImagesUris.add(NO_IMAGE);
             splitNames.add(NO_NAME);
         }
@@ -37,5 +39,17 @@ public class RunMetadata {
 
     public boolean displayBestSplits() {
         return displayBestSplits;
+    }
+
+    public int numAttempts() {
+        return attempts;
+    }
+
+    public int getNumSegments() {
+        return numSegments;
+    }
+
+    public void setNumAttempts(int numAttempts) {
+        this.attempts = numAttempts;
     }
 }

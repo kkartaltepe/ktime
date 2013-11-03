@@ -10,8 +10,8 @@
     <ImageView fx:id="image" styleClass="splitImage"
                GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="2">
     </ImageView>
-    <Text fx:id="name" styleClass="text,splitName" text="Split"
+    <Text fx:id="name" styleClass="text,splitName" text="-"
           GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS"/>
-    <Text fx:id="displayTime" styleClass="text,splitDisplayTime" text="--"
+    <Text fx:id="displayTime" styleClass="text,splitDisplayTime" text="no time"
           GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS"/>
 </GridPane>

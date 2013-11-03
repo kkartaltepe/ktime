@@ -1,5 +1,7 @@
 package ktime.utils;
 
+import ktime.data.SplitTimes;
+
 import java.util.List;
 
 /**
@@ -15,17 +17,19 @@ public interface StopWatch {
     Long split();
     void skipSplit();
     void unsplit();
-    int getNumSplits();
+    int getNumSegments();
     long stop();
     long pause();
     void unpause();
-    Long getSplitTime(int splitNum);
-    List<Long> getSplitTimes();
+    Long getSegmentTime(int splitNum);
+    List<Long> getSegmentTimes();
+    SplitTimes getSplitTimes();
 
     long getTotalTime();
-    Long getCurrentSplitTime();
+    Long getCurrentSegmentTime();
 
     boolean isRunning();
     boolean isPaused();
 
+    void reset();
 }

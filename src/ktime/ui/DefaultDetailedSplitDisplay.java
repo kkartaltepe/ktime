@@ -47,8 +47,8 @@ public class DefaultDetailedSplitDisplay implements DetailedSplitDisplay {
 
     @Override
     public void setDisplayedSplit(int split) {
-        currentSplitTime.setText(TimeFormatter.format(history.getBestRunTimes().getTime(split)));
-        bestSplitTime.setText(TimeFormatter.format(history.getBestSplitTimes().getTime(split)));
+        currentSplitTime.setText(TimeFormatter.format(history.getBestRunTimes().getSegmentTime(split)));
+        bestSplitTime.setText(TimeFormatter.format(history.getBestSplitTimes().getSegmentTime(split)));
         previousSplitDelta.setText("-");
     }
 

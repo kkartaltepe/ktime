@@ -15,50 +15,49 @@ public class RunHistory {
     SplitTimes bestRun;
     List<SplitTimes> historicalTimes;
     RunMetadata metadata;
-    private int attempts;
 
-    public RunHistory(int numSplits) {
-        bestSplitTimes = new SplitTimes(numSplits);
-        bestRun = new SplitTimes(numSplits);
+    public RunHistory(int numSegments) {
         historicalTimes = new ArrayList<SplitTimes>();
-        attempts = 0;
-        metadata = new RunMetadata(numSplits);
+        metadata = new RunMetadata(numSegments);
     }
 
     /**
      * reset down to the number of saved attempts we have.
      */
     public void resetAttempts() {
-        attempts = historicalTimes.size();
+        metadata.setNumAttempts(historicalTimes.size());
     }
 
     public void addUnsavedAttempt() {
-        attempts++;
+        metadata.setNumAttempts(metadata.numAttempts()+1);
     }
 
     public void saveAttempt(SplitTimes run) {
-        attempts++;
+        metadata.setNumAttempts(metadata.numAttempts()+1);
         SplitTimes runToSave = new SplitTimes(run);
+        System.out.println("Run to save segments" + runToSave.getNumSegments());
         historicalTimes.add(runToSave);
-        for (int i = 0; i < runToSave.getNumSplits(); i++) {
-            Long time = bestSplitTimes.getTime(i);
-            Long toSaveTime = runToSave.getTime(i);
+        if(bestSplitTimes == null)
+            bestSplitTimes = new SplitTimes(runToSave);
+        for (int i = 0; i < runToSave.getNumSegments(); i++) {
+            Long time = bestSplitTimes.getSegmentTime(i);
+            Long toSaveTime = runToSave.getSegmentTime(i);
             if (time == null ||
                 (toSaveTime != null && toSaveTime < time)) {
-                bestSplitTimes.setTime(i, toSaveTime);
+                bestSplitTimes.setSegmentTime(i, toSaveTime);
             }
         }
-        if(runToSave.getTotalTime() < bestRun.getTotalTime()) {
-            bestRun = runToSave;
+        if(bestRun != null) {
+            System.out.println("Best: " + bestRun.getTotalTime() + " compared to: " + runToSave.getTotalTime());
         }
-    }
-
-    public int getNumAttempts() {
-        return attempts;
+        if (bestRun == null || runToSave.getTotalTime() < bestRun.getTotalTime()) {
+            bestRun = new SplitTimes(runToSave);
+            System.out.println("Best run!!!! " + bestRun.getTotalTime());
+        }
     }
 
     public SplitTimes getBestSplitTimes() {
-        return new SplitTimes(bestSplitTimes);
+        return bestSplitTimes != null ? new SplitTimes(bestSplitTimes) : null;
     }
 
     public List<SplitTimes> getHistoricalTimes() {
@@ -66,18 +65,10 @@ public class RunHistory {
     }
 
     public SplitTimes getBestRunTimes() {
-        return new SplitTimes(bestRun);
+        return bestRun != null ? new SplitTimes(bestRun) : null;
     }
 
-    public String getSplitName(int splitNum) {
-        return metadata.getSplitName(splitNum);
-    }
-
-    public String getSplitUri(int splitNum) {
-        return metadata.getSplitImageUri(splitNum);
-    }
-
-    public boolean displayBestSplits() {
-        return metadata.displayBestSplits();
+    public RunMetadata getRunMetadata() {
+        return  metadata;
     }
 }

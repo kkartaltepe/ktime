@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.HBox?>
-<VBox fx:controller="ktime.Controller" fx:id="mainContainer" xmlns:fx="http://javafx.com/fxml" alignment="TOP_CENTER">
+<VBox fx:id="mainContainer" xmlns:fx="http://javafx.com/fxml" alignment="TOP_CENTER">
     <Text fx:id="windowTitle" styleClass="text" text="Some cool title or something"/>
     <!--<ScrollPane fx:id="splitList" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" VBox.vgrow="ALWAYS" ></ScrollPane>-->
     <!--<Separator></Separator>-->

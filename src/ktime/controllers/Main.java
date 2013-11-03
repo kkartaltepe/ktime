@@ -1,12 +1,12 @@
-package ktime;
+package ktime.controllers;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ktime.data.RunHistory;
@@ -33,9 +33,6 @@ public class Main extends Application {
     @Override
     public void start(final Stage primaryStage) throws Exception{
         runHistory = new RunHistory(10);
-        currentRun = new SplitTimes(10);
-        runHistory.saveAttempt(currentRun);
-        currentRun = runHistory.getBestSplitTimes();
         setUpUI();
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -43,25 +40,31 @@ public class Main extends Application {
                 if (keyEvent.getCode() == KeyCode.SPACE) {
                     if (!stopwatch.isRunning()) {
                         stopwatch.start();
-                    } else if (stopwatch.getNumSplits() == currentRun.getNumSplits()) {
-                        splitContainer.setActualTime(stopwatch.getNumSplits() - 2, stopwatch.getCurrentSplitTime());
+                    } else if (stopwatch.getNumSegments() == runHistory.getRunMetadata().getNumSegments()-1) {
+                        stopwatch.stop();
+                        splitContainer.setActualTime(stopwatch.getNumSegments()-1, stopwatch.getCurrentSegmentTime());
+                        runHistory.saveAttempt(stopwatch.getSplitTimes());
                     } else {
-                        splitContainer.setActualTime(stopwatch.getNumSplits() - 1, stopwatch.split());
+                        Long segmentTime = stopwatch.split();
+                        splitContainer.setActualTime(stopwatch.getNumSegments()-1, segmentTime);
                     }
                 }
                 if (keyEvent.getCode() == KeyCode.Q) {
                     primaryStage.close();
                 }
-                if (keyEvent.getCode() == KeyCode.T) {
+                if (keyEvent.getCode() == KeyCode.A) {
+                    stopwatch.reset();
+                    splitContainer.reset();
+                    splitContainer.setRunHistory(runHistory);
                 }
             }
         });
-        scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
+        new AnimationTimer() {
             @Override
-            public void handle(MouseEvent mouseEvent) {
+            public void handle(long l) {
                 detailedSplit.setCurrentTime(stopwatch.getTotalTime());
             }
-        });
+        }.start();
         primaryStage.setScene(scene);
 //        primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.show();
@@ -80,16 +83,20 @@ public class Main extends Application {
         root.setFillWidth(true);
         splitContainer = new VSplitContainer();
         root.getChildren().add(splitContainer.getNode());
-        splitContainer.addRunHistory(runHistory);
+        splitContainer.setRunHistory(runHistory);
         detailedSplit = new DefaultDetailedSplitDisplay();
         root.getChildren().add(detailedSplit.getNode());
         scene = new Scene(root);
-        scene.getStylesheets().add("ktime/test.css");
+        scene.getStylesheets().add("ktime/controllers/test.css");
 
     }
 
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public void handle(long l) {
+        detailedSplit.setCurrentTime(stopwatch.getTotalTime());
     }
 }

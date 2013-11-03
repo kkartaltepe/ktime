@@ -2,9 +2,6 @@ package ktime.ui.layout;
 
 import javafx.scene.Node;
 import ktime.data.RunHistory;
-import ktime.ui.SplitDisplay;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,13 +11,12 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface SplitContainer {
-    public void addSplits(List<SplitDisplay> splits);
-    public void addSplit(SplitDisplay split, int index);
-    public void addSplit(SplitDisplay split);
     public void setActualTime(int splitIndex, Long time);
     public void setActiveSplit(int index);
     public int  getActiveSplit();
     public Node getNode();
 
-    void addRunHistory(RunHistory runHistory);
+    void setRunHistory(RunHistory runHistory);
+
+    void reset();
 }

@@ -3,6 +3,7 @@ package ktime.ui.layout;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import ktime.data.RunHistory;
+import ktime.data.RunMetadata;
 import ktime.data.SplitTimes;
 import ktime.ui.DefaultSplitDisplay;
 import ktime.ui.SplitDisplay;
@@ -26,23 +27,19 @@ public class VSplitContainer implements SplitContainer{
         splits = new ArrayList<SplitDisplay>();
     }
 
-    @Override
-    public void addSplits(List<SplitDisplay> splits) {
-        for (SplitDisplay split : splits) {
-            addSplit(split);
-        }
-    }
-
-    @Override
-    public void addSplit(SplitDisplay split, int index) {
-        content.getChildren().add(index, split.getNode());
-        splits.add(index, split);
-    }
-
-    @Override
     public void addSplit(SplitDisplay split) {
         content.getChildren().add(split.getNode());
         splits.add(split);
+    }
+
+    public void removeSplit(int numSplit) {
+        content.getChildren().remove(numSplit);
+        splits.remove(numSplit);
+    }
+
+    public void clearSplits() {
+        content.getChildren().clear();
+        splits.clear();
     }
 
     @Override
@@ -66,18 +63,29 @@ public class VSplitContainer implements SplitContainer{
     }
 
     @Override
-    public void addRunHistory(RunHistory runHistory) {
+    public void setRunHistory(RunHistory runHistory) {
+        clearSplits();
         SplitTimes toDisplay;
-        if(runHistory.displayBestSplits())
+        RunMetadata runMetadata = runHistory.getRunMetadata();
+        if(runMetadata.displayBestSplits())
             toDisplay = runHistory.getBestSplitTimes();
         else
             toDisplay = runHistory.getBestRunTimes();
-        for(int i = 0; i < toDisplay.getNumSplits(); i++) {
+        for(int i = 0; i < runMetadata.getNumSegments(); i++) {
             SplitDisplay splitDisplay = new DefaultSplitDisplay();
-            splitDisplay.setName(runHistory.getSplitName(i));
-            splitDisplay.setImageUrl(runHistory.getSplitUri(i));
-            splitDisplay.setTime(toDisplay.getTime(i));
+            splitDisplay.setName(runMetadata.getSplitName(i));
+            splitDisplay.setImageUrl(runMetadata.getSplitImageUri(i));
+            if(toDisplay != null) {
+                splitDisplay.setTime(toDisplay.getSegmentTime(i));
+            }
             addSplit(splitDisplay);
+        }
+    }
+
+    @Override
+    public void reset() {
+        for(SplitDisplay splitDisplay : splits) {
+            splitDisplay.setActualTime(null);
         }
     }
 

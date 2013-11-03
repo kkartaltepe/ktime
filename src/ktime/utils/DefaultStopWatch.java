@@ -1,5 +1,9 @@
 package ktime.utils;
 
+import javafx.beans.property.ReadOnlyListWrapper;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import ktime.data.SplitTimes;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
@@ -14,10 +18,17 @@ import java.util.List;
  */
 public class DefaultStopWatch implements StopWatch {
     private long offset = 0;
-    private long startTime = 0;
-    private long endTime = 0;
     private boolean running = false, paused = false;
-    private List<Long> splitTimes;
+    private ReadOnlyObjectWrapper<Long> startTime, endTime;
+    private ReadOnlyListWrapper<Long> segmentTimes; //Duration of each split
+    private List<Long> splitTimes; //When you split
+
+    public DefaultStopWatch() {
+        endTime = new ReadOnlyObjectWrapper<Long>(null);
+        startTime = new ReadOnlyObjectWrapper<Long>(null);
+        segmentTimes = new ReadOnlyListWrapper<Long>(FXCollections.<Long>observableArrayList());
+        splitTimes = new ArrayList<Long>();
+    }
 
     @Override
     public void start() {
@@ -30,10 +41,11 @@ public class DefaultStopWatch implements StopWatch {
             throw new IllegalStateException("Please stop the stopwatch before starting again");
         }
         this.offset = offset;
-        endTime = 0;
-        startTime = getTime();
-        splitTimes = new ArrayList<Long>();
-        splitTimes.add(startTime);
+        endTime.set(null);
+        startTime.set(getTime());
+        segmentTimes.clear();
+        splitTimes.clear();
+        splitTimes.add(startTime.get());
         running = true;
         paused = false;
     }
@@ -45,14 +57,15 @@ public class DefaultStopWatch implements StopWatch {
         }
         long splitTime = getTime();
         splitTimes.add(splitTime);
-        if(splitTimes.get(splitTimes.size() - 2) == null)
-            return null; //Cannot compute length of this split;
-        return splitTime - splitTimes.get(splitTimes.size() - 2);
+        Long segmentTime = calculateSegmentTime(segmentTimes.size());
+        segmentTimes.add(segmentTime);
+        return segmentTime;
     }
 
     @Override
     public void skipSplit() {
         splitTimes.add(null);
+        segmentTimes.add(null);
     }
 
     @Override
@@ -60,22 +73,25 @@ public class DefaultStopWatch implements StopWatch {
         if(!running || splitTimes.size() < 2) //We will always have at least one split (read: segment).
             throw new IllegalStateException("You must split first.");
         splitTimes.remove(splitTimes.size()-1);
+        segmentTimes.remove(segmentTimes.size()-1);
     }
 
     @Override
-    public int getNumSplits() {
-        return splitTimes.size();
+    public int getNumSegments() { //Segments colloquial called splits
+        return segmentTimes.size();
     }
 
     @Override
     public long stop() {
         if(!running)
             throw new IllegalStateException("Stopwatch is not running");
-        endTime = getTime();
-        splitTimes.add(endTime);
+        endTime.set(getTime());
+        splitTimes.add(endTime.get());
+        Long segmentTime = calculateSegmentTime(segmentTimes.size());
+        segmentTimes.add(segmentTime);
         running = false;
         paused = false;
-        return endTime - startTime + offset;
+        return endTime.get() - startTime.get() + offset;
     }
 
     @Override
@@ -101,39 +117,38 @@ public class DefaultStopWatch implements StopWatch {
     @Override
     public long getTotalTime() {
         if(running)
-            return getTime() - startTime + offset;
-        else
-            return endTime - startTime + offset;
+            return getTime() - startTime.get() + offset;
+        if (startTime.get() != null)
+            return endTime.get() - startTime.get() + offset;
+        else  //Stopped but reset/not started
+            return 0;
+
     }
 
     @Override
-    public Long getCurrentSplitTime() {
+    public Long getCurrentSegmentTime() {
         if(splitTimes.size() == 0)
             throw new IllegalStateException("Stopwatch must have been started first.");
         if (!running)
-            return splitTimes.get(splitTimes.size() -1) - splitTimes.get(splitTimes.size() -2);
-        return getTime() - splitTimes.get(splitTimes.size()-1);
+            return segmentTimes.get(segmentTimes.size() -1); //Just get the last segment since we have stopped.
+        return getTime() - splitTimes.get(splitTimes.size()-1); //Measure from last split to now.
     }
 
-
-    /**
-     * This function gets splits indexed from 0 (even though internally they start at 1)
-     * @param splitNum
-     * @return
-     */
     @Override
-    public Long getSplitTime(int splitNum) {
-        if(splitNum < 0 || splitNum >= splitTimes.size())
-            throw new IllegalArgumentException("split out of bound");
-        if(split() == splitTimes.size()-1) //Latest split
-            return getCurrentSplitTime();
-        if(splitTimes.get(splitNum + 1) == null || splitTimes.get(splitNum) == null)
-            return null; //Unable to compute
-        return splitTimes.get(splitNum+1) - splitTimes.get(splitNum);
+    public Long getSegmentTime(int segmentNum) {
+        if(segmentNum < 0 || segmentNum >= segmentTimes.size())
+            throw new IllegalArgumentException("Invalid segment (Out of bounds)");
+        return segmentTimes.get(segmentNum);
     }
 
-    public List<Long> getSplitTimes() {
-        return new ArrayList<Long>(splitTimes);
+    @Override
+    public List<Long> getSegmentTimes() {
+        return segmentTimes.getReadOnlyProperty().get();
+    }
+
+    @Override
+    public SplitTimes getSplitTimes() {
+        return new SplitTimes(splitTimes);
     }
 
     @Override
@@ -143,11 +158,35 @@ public class DefaultStopWatch implements StopWatch {
 
     @Override
     public boolean isPaused() {
-        return isPaused();
+        return paused;
     }
 
+    @Override
+    public void reset() {
+        offset = 0;
+        endTime.set(null);
+        startTime.set(null);
+        segmentTimes.clear();
+        splitTimes.clear();
+        running = false;
+        paused = false;
+    }
 
     private long getTime() {
-        return System.currentTimeMillis() * 1000 * 1000;
+//        return System.currentTimeMillis() * 1000 * 1000;
+        return System.nanoTime();
     }
+
+    private Long calculateSegmentTime(int segment) {
+        if(segment < 0 || segment > splitTimes.size()-2)
+            throw new IndexOutOfBoundsException("No such segment exists");
+
+        if(splitTimes.get(segment + 1) == null) //start time
+            return null;
+        if(splitTimes.get(segment) == null) //end time
+            return null;
+
+        return splitTimes.get(segment + 1) - splitTimes.get(segment);
+    }
+
 }

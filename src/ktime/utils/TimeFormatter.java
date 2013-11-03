@@ -20,20 +20,25 @@ public class TimeFormatter {
      * @param duration
      * @return
      */
-    public static String format(Long duration){
-        if(duration == null)
-            return NO_TIME;
-        duration = Math.abs(duration);
-        duration = TimeUnit.NANOSECONDS.toMillis(duration);
-        String durationString = DurationFormatUtils.formatDuration(duration, "HH:mm:ss.SSS"); //Does not handle negative durations at all...
-        return trimInsignificantDigits(durationString);
-    }
-
-    public static String formatSigned(Long duration) {
+    public static String formatTime(Long duration, boolean signed){
         if(duration == null)
             return NO_TIME;
         String sign = duration < 0 ? "-" : "+";
-        return sign + format(duration);
+        duration = Math.abs(duration);
+        duration = TimeUnit.NANOSECONDS.toMillis(duration);
+        String durationString = DurationFormatUtils.formatDuration(duration, "HH:mm:ss.SSS"); //Does not handle negative durations at all...
+        String trimmedString = trimInsignificantDigits(durationString);
+        if(!signed)
+            trimmedString = sign + trimmedString;
+        return trimmedString;
+    }
+
+    public static String format(Long duration) {
+        return formatTime(duration, false);
+    }
+
+    public static String formatSigned(Long duration) {
+        return formatTime(duration, true);
     }
 
     private static String trimInsignificantDigits(String durationString) {

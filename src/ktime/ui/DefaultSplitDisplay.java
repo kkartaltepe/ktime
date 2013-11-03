@@ -1,12 +1,10 @@
 package ktime.ui;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import ktime.utils.TimeFormatter;
 
@@ -34,16 +32,6 @@ public class DefaultSplitDisplay implements SplitDisplay {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load ui fxml");
         }
-        node.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (node.getStyleClass().contains("activeSplit"))
-                    deactivate();
-                else
-                    activate();
-
-            }
-        });
     }
 
     @Override
@@ -86,13 +74,11 @@ public class DefaultSplitDisplay implements SplitDisplay {
     @Override
     public void activate() {
         node.getStyleClass().add("activeSplit");
-        System.out.println("Activated split");
     }
 
     @Override
     public void deactivate() {
         node.getStyleClass().remove("activeSplit");
-        System.out.println("Deactivated split");
     }
 
 }

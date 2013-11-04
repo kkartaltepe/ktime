@@ -8,7 +8,7 @@ import java.util.List;
  * User: kurt
  * Date: 10/30/13
  * Time: 9:19 PM
- * To change this template use File | Settings | File Templates.
+ * To Change this template use File | Settings | File Templates.
  */
 public class RunMetadata {
     public static final String NO_IMAGE = "http://pbs.twimg.com/profile_images/378800000644208214/8b82096eee52f15ee59f0f14a5c2d024_normal.png";
@@ -29,15 +29,15 @@ public class RunMetadata {
         displayBestSplits = false;
     }
 
-    public String getSplitName(int splitNum) {
+    public String getSegmentName(int splitNum) {
         return splitNames.get(splitNum);
     }
 
-    public String getSplitImageUri(int splitNum) {
+    public String getSegmentImageUri(int splitNum) {
         return splitImagesUris.get(splitNum);
     }
 
-    public boolean displayBestSplits() {
+    public boolean displayBestSegments() {
         return displayBestSplits;
     }
 

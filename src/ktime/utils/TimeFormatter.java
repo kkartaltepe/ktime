@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
  * User: kurt
  * Date: 10/28/13
  * Time: 2:04 AM
- * To change this template use File | Settings | File Templates.
+ * To Change this template use File | Settings | File Templates.
  */
 public class TimeFormatter {
 

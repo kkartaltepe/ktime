@@ -14,7 +14,7 @@ import java.io.IOException;
  * User: kurt
  * Date: 10/28/13
  * Time: 6:59 PM
- * To change this template use File | Settings | File Templates.
+ * To Change this template use File | Settings | File Templates.
  */
 public class DefaultDetailedSplitDisplay implements DetailedSplitDisplay {
     Node node;

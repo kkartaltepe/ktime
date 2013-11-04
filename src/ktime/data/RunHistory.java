@@ -8,7 +8,7 @@ import java.util.List;
  * User: kurt
  * Date: 10/27/13
  * Time: 9:54 PM
- * To change this template use File | Settings | File Templates.
+ * To Change this template use File | Settings | File Templates.
  */
 public class RunHistory {
     SplitTimes bestSplitTimes;

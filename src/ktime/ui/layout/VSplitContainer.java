@@ -5,8 +5,9 @@ import javafx.scene.layout.VBox;
 import ktime.data.RunHistory;
 import ktime.data.RunMetadata;
 import ktime.data.SplitTimes;
-import ktime.ui.DefaultSplitDisplay;
-import ktime.ui.SplitDisplay;
+import ktime.ui.DefaultSegmentDisplay;
+import ktime.ui.SegmentDisplay;
+import ktime.utils.stopwatch.StopwatchListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,52 +17,78 @@ import java.util.List;
  * User: kurt
  * Date: 10/25/13
  * Time: 3:16 PM
- * To change this template use File | Settings | File Templates.
+ * To Change this template use File | Settings | File Templates.
  */
 public class VSplitContainer implements SplitContainer{
-    List<SplitDisplay> splits;
+    List<SegmentDisplay> segments;
     VBox content;
 
     public VSplitContainer() {
         content = new VBox();
-        splits = new ArrayList<SplitDisplay>();
+        segments = new ArrayList<SegmentDisplay>();
     }
 
-    public void addSplit(SplitDisplay split) {
-        content.getChildren().add(split.getNode());
-        splits.add(split);
+    @Override
+    public void setActualSegmentTime(int segmentIndex, Long time) {
+        segments.get(segmentIndex).setActualSegmentTime(time);
+        segments.get(segmentIndex).displayLastRunDelta();
     }
 
-    public void removeSplit(int numSplit) {
-        content.getChildren().remove(numSplit);
-        splits.remove(numSplit);
+    @Override
+    public void setActualSegmentEnd(int segmentIndex, Long time) {
+        segments.get(segmentIndex).setActualSegmentEnd(time);
+        segments.get(segmentIndex).displayLastRunDelta();
     }
 
-    public void clearSplits() {
+    @Override
+    public void getActiveSegment(int segmentIndex) {
+        segments.get(segmentIndex).activate();
+    }
+
+    @Override
+    public int getActiveSegment() {
+        return 0;  //To Change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setRunHistory(RunHistory runHistory) {
+        clearSegments();
+        SplitTimes oldSplits;
+        RunMetadata runMetadata = runHistory.getRunMetadata();
+        if(runMetadata.displayBestSegments())
+            oldSplits = runHistory.getBestSplitTimes();
+        else
+            oldSplits = runHistory.getBestRunTimes();
+        for(int i = 0; i < runMetadata.getNumSegments(); i++) {
+            SegmentDisplay segmentDisplay = new DefaultSegmentDisplay();
+            segmentDisplay.setName(runMetadata.getSegmentName(i));
+            segmentDisplay.setImageUri(runMetadata.getSegmentImageUri(i));
+            if(oldSplits != null) {
+                segmentDisplay.setLastSegmentTime(oldSplits.getSegmentTime(i));
+                segmentDisplay.setLastSegmentEnd(oldSplits.getSegmentEndTime(i));
+            }
+            addSegment(segmentDisplay);
+        }
+    }
+
+
+    private void addSegment(SegmentDisplay segment) {
+        content.getChildren().add(segment.getNode());
+        segments.add(segment);
+    }
+
+    private void clearSegments() {
         content.getChildren().clear();
-        splits.clear();
+        segments.clear();
     }
 
     @Override
-    public void setActualSegmentTime(int splitIndex, Long time) {
-        splits.get(splitIndex).setActualTime(time);
-        splits.get(splitIndex).displayLastRunDelta();
-    }
-
-    @Override
-    public void setSegmentEndTime(int splitIndex, Long time) {
-        splits.get(splitIndex).setActualSegmentEnd(time);
-        splits.get(splitIndex).displayLastRunDelta();
-    }
-
-    @Override
-    public void setActiveSplit(int splitIndex) {
-        splits.get(splitIndex).activate();
-    }
-
-    @Override
-    public int getActiveSplit() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    public void reset() {
+        for(SegmentDisplay segmentDisplay : segments) {
+            segmentDisplay.setActualSegmentTime(null);
+            segmentDisplay.setActualSegmentEnd(null);
+            segmentDisplay.displayLastRunDelta();
+        }
     }
 
     @Override
@@ -70,31 +97,27 @@ public class VSplitContainer implements SplitContainer{
     }
 
     @Override
-    public void setRunHistory(RunHistory runHistory) {
-        clearSplits();
-        SplitTimes toDisplay;
-        RunMetadata runMetadata = runHistory.getRunMetadata();
-        if(runMetadata.displayBestSplits())
-            toDisplay = runHistory.getBestSplitTimes();
-        else
-            toDisplay = runHistory.getBestRunTimes();
-        for(int i = 0; i < runMetadata.getNumSegments(); i++) {
-            SplitDisplay splitDisplay = new DefaultSplitDisplay();
-            splitDisplay.setName(runMetadata.getSplitName(i));
-            splitDisplay.setImageUrl(runMetadata.getSplitImageUri(i));
-            if(toDisplay != null) {
-                splitDisplay.setLastTime(toDisplay.getSegmentTime(i));
-                splitDisplay.setLastSegmentEnd(toDisplay.getSegmentEndTime(i));
-            }
-            addSplit(splitDisplay);
-        }
-    }
+    public StopwatchListener getStopwatchListener() {
+        return new StopwatchListener() {
+            @Override
+            public void onChanged(Change change) {
+                switch (change.getChangeType()) {
+                    case STOP:
+                    case SPLIT:
+                    case SKIPSPLIT:
+                    case UNSPLIT:
+                        setActualSegmentTime(change.getChangedSplit()-1, change.getNewSegmentTime());
+                        setActualSegmentEnd(change.getChangedSplit()-1, change.getNewSplitTime());
+                        break;
+                    case START:
+                    case RESET:
+                        System.out.println("Resetting container");
+                        reset();
+                        break;
 
-    @Override
-    public void reset() {
-        for(SplitDisplay splitDisplay : splits) {
-            splitDisplay.setActualTime(null);
-        }
+                }
+            }
+        };
     }
 
 }

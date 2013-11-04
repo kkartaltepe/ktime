@@ -1,4 +1,4 @@
-package ktime.utils;
+package ktime.utils.stopwatch;
 
 import ktime.data.SplitTimes;
 
@@ -9,9 +9,9 @@ import java.util.List;
  * User: kurt
  * Date: 10/27/13
  * Time: 10:21 PM
- * To change this template use File | Settings | File Templates.
+ * To Change this template use File | Settings | File Templates.
  */
-public interface StopWatch {
+public interface Stopwatch {
     void start();
     void start(long startFrom);
     Long split();

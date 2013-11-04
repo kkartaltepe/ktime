@@ -15,16 +15,16 @@ import java.io.IOException;
  * User: kurt
  * Date: 10/25/13
  * Time: 11:44 AM
- * To change this template use File | Settings | File Templates.
+ * To Change this template use File | Settings | File Templates.
  */
-public class DefaultSplitDisplay implements SplitDisplay {
+public class DefaultSegmentDisplay implements SegmentDisplay {
     @FXML ImageView image;
     @FXML Text name;
     @FXML Text displayTime;
     private Long lastTime, lastSegmentEnd, actualTime, actualSegmentEnd;
     private Node node;
 
-    public DefaultSplitDisplay() {
+    public DefaultSegmentDisplay() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("defaultSplitDisplay.fxml"));
         loader.setController(this);
         try {
@@ -40,7 +40,7 @@ public class DefaultSplitDisplay implements SplitDisplay {
     }
 
     @Override
-    public void setImageUrl(String imageUrl) {
+    public void setImageUri(String imageUrl) {
         image.setImage(new Image(imageUrl));
     }
 
@@ -55,7 +55,7 @@ public class DefaultSplitDisplay implements SplitDisplay {
     }
 
     @Override
-    public void setLastTime(Long lastTime) {
+    public void setLastSegmentTime(Long lastTime) {
         this.lastTime = lastTime;
     }
 
@@ -65,7 +65,7 @@ public class DefaultSplitDisplay implements SplitDisplay {
     }
 
     @Override
-    public void setActualTime(Long time) {
+    public void setActualSegmentTime(Long time) {
         this.actualTime = time;
     }
 
@@ -112,9 +112,9 @@ public class DefaultSplitDisplay implements SplitDisplay {
     private void computeSplitStyleClass() {
         Long segmentDelta = computeDelta(lastSegmentEnd, actualSegmentEnd);
         Long runDelta = computeDelta(lastTime, actualTime);
+        displayTime.getStyleClass().retainAll("text", "splitDisplayTime");
         if(segmentDelta == null || runDelta == null)
             return; //No styling.
-        displayTime.getStyleClass().retainAll("text", "splitDisplayTime");
         if(segmentDelta > 0 && runDelta > 0)
             displayTime.getStyleClass().add("positiveRunPositiveSeg");
         if(segmentDelta > 0 && runDelta < 0)

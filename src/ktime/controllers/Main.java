@@ -10,21 +10,19 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ktime.data.RunHistory;
-import ktime.data.SplitTimes;
 import ktime.ui.DefaultDetailedSplitDisplay;
 import ktime.ui.DetailedSplitDisplay;
 import ktime.ui.layout.SplitContainer;
 import ktime.ui.layout.VSplitContainer;
-import ktime.utils.DefaultStopWatch;
-import ktime.utils.StopWatch;
+import ktime.utils.stopwatch.DefaultStopwatch;
+import ktime.utils.stopwatch.ObservableStopwatch;
 
 import java.io.IOException;
 
 public class Main extends Application {
 
-    StopWatch stopwatch = new DefaultStopWatch();
+    ObservableStopwatch stopwatch = new DefaultStopwatch();
     RunHistory runHistory;
-    SplitTimes currentRun;
     SplitContainer splitContainer;
     DetailedSplitDisplay detailedSplit;
     private Scene scene;
@@ -34,23 +32,18 @@ public class Main extends Application {
     public void start(final Stage primaryStage) throws Exception{
         runHistory = new RunHistory(10);
         setUpUI();
+        stopwatch.addListener(splitContainer.getStopwatchListener());
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.SPACE) {
                     if (!stopwatch.isRunning()) {
                         stopwatch.start();
-                    } else if (stopwatch.getNumSegments() == runHistory.getRunMetadata().getNumSegments()-1) {
+                    } else if (stopwatch.getNumSegments() == runHistory.getRunMetadata().getNumSegments() - 1) {
                         stopwatch.stop();
-                        int currentSegment = stopwatch.getNumSegments()-1;
-                        splitContainer.setSegmentEndTime(currentSegment, stopwatch.getSplitTimes().getSegmentEndTime(currentSegment));
-                        splitContainer.setActualSegmentTime(currentSegment, stopwatch.getCurrentSegmentTime());
                         runHistory.saveAttempt(stopwatch.getSplitTimes());
                     } else {
-                        Long segmentTime = stopwatch.split();
-                        int currentSegment = stopwatch.getNumSegments()-1;
-                        splitContainer.setSegmentEndTime(currentSegment, stopwatch.getSplitTimes().getSegmentEndTime(currentSegment));
-                        splitContainer.setActualSegmentTime(currentSegment, segmentTime);
+                        stopwatch.split();
                     }
                 }
                 if (keyEvent.getCode() == KeyCode.Q) {
@@ -58,7 +51,6 @@ public class Main extends Application {
                 }
                 if (keyEvent.getCode() == KeyCode.A) {
                     stopwatch.reset();
-                    splitContainer.reset();
                     splitContainer.setRunHistory(runHistory);
                 }
             }

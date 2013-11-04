@@ -2,6 +2,7 @@ package ktime.ui.layout;
 
 import javafx.scene.Node;
 import ktime.data.RunHistory;
+import ktime.data.RunHistoryListener;
 import ktime.utils.stopwatch.StopwatchListener;
 
 /**
@@ -23,4 +24,5 @@ public interface SplitContainer {
     void reset();
 
     StopwatchListener getStopwatchListener();
+    RunHistoryListener getRunHistoryListener();
 }

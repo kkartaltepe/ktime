@@ -30,6 +30,6 @@ public interface SegmentDisplay {
     void setLastSegmentEnd(Long segmentEnd);
 
     void displayLastRunDelta();
-
     void displayLastSegmentDelta();
+    void displayLastRunTimes();
 }

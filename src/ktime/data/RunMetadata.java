@@ -13,35 +13,93 @@ import java.util.List;
 public class RunMetadata {
     public static final String NO_IMAGE = "http://pbs.twimg.com/profile_images/378800000644208214/8b82096eee52f15ee59f0f14a5c2d024_normal.png";
     public static final String NO_NAME = "-";
-    List<String> splitNames;
-    List<String> splitImagesUris;
+    String runName;
+    List<String> segmentNames;
+    List<String> segmentImageUris;
     int attempts, numSegments;
-    boolean displayBestSplits;
+    boolean displayBestSegments;
+    List<RunHistoryListener> runHistoryListeners;
 
-    public RunMetadata(int numSegments) {
+    public RunMetadata(String name, int numSegments, List<RunHistoryListener> runHistoryListeners) {
+        this.runName = name;
         this.numSegments = numSegments;
-        splitImagesUris = new ArrayList<String>(numSegments);
-        splitNames = new ArrayList<String>(numSegments);
+        segmentImageUris = new ArrayList<String>(numSegments);
+        segmentNames = new ArrayList<String>(numSegments);
         for (int i = 0; i < numSegments; i++) {
-            splitImagesUris.add(NO_IMAGE);
-            splitNames.add(NO_NAME);
+            segmentImageUris.add(NO_IMAGE);
+            segmentNames.add(NO_NAME);
         }
-        displayBestSplits = false;
+        displayBestSegments = false;
+        this.runHistoryListeners = runHistoryListeners;
     }
 
     public String getSegmentName(int splitNum) {
-        return splitNames.get(splitNum);
+        return segmentNames.get(splitNum);
+    }
+
+    public void setSegmentName(final int segmentNum, final String name) {
+        segmentNames.set(segmentNum, name);
+        notifyListeners(new AbstractRunHistoryChange(){
+            @Override
+            public RunHistoryListener.RunHistoryEventType getChangeType() {
+                return RunHistoryListener.RunHistoryEventType.SEGMENT_NAME_CHANGE;
+            }
+
+            @Override
+            public int getAlteredSegment() {
+                return segmentNum;
+            }
+
+            @Override
+            public String getNewSegmentName() {
+                return name;
+            }
+        });
     }
 
     public String getSegmentImageUri(int splitNum) {
-        return splitImagesUris.get(splitNum);
+        return segmentImageUris.get(splitNum);
+    }
+
+    public void setSegmentImageUri(final int segmentNum, final String uri) {
+        segmentImageUris.set(segmentNum, uri);
+        notifyListeners(new AbstractRunHistoryChange() {
+            @Override
+            public RunHistoryListener.RunHistoryEventType getChangeType() {
+                return RunHistoryListener.RunHistoryEventType.SEGMENT_IMAGE_CHANGE;
+            }
+
+            @Override
+            public int getAlteredSegment() {
+                return segmentNum;
+            }
+
+            public String getNewSegmentImageUri() {
+                return uri;
+            }
+        });
     }
 
     public boolean displayBestSegments() {
-        return displayBestSplits;
+        return displayBestSegments;
     }
 
-    public int numAttempts() {
+    public void setDisplayBestSegments(final boolean displayBestSegments) {
+        this.displayBestSegments = displayBestSegments;
+        notifyListeners(new AbstractRunHistoryChange() {
+            @Override
+            public RunHistoryListener.RunHistoryEventType getChangeType() {
+                return RunHistoryListener.RunHistoryEventType.DISPLAY_MODE_CHANGE;
+            }
+
+            @Override
+            public boolean isDisplayBestSegments() {
+                return displayBestSegments;
+            }
+        });
+    }
+
+    public int getNumAttempts() {
         return attempts;
     }
 
@@ -51,5 +109,11 @@ public class RunMetadata {
 
     public void setNumAttempts(int numAttempts) {
         this.attempts = numAttempts;
+    }
+
+    public void notifyListeners(RunHistoryListener.Change change) {
+        for (RunHistoryListener listener : runHistoryListeners) {
+            listener.onChanged(change);
+        }
     }
 }

@@ -98,6 +98,12 @@ public class DefaultSegmentDisplay implements SegmentDisplay {
         computeSplitStyleClass();
     }
 
+    @Override
+    public void displayLastRunTimes() {
+        displayTime.setText(TimeFormatter.format(lastSegmentEnd));
+        displayTime.getStyleClass().retainAll("text", "splitDisplayTime");
+    }
+
     private Long computeDelta(Long lastTime, Long currentTime) {
         Long delta;
         if(currentTime != null &&  lastTime != null)

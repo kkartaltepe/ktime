@@ -30,9 +30,10 @@ public class Main extends Application {
 
     @Override
     public void start(final Stage primaryStage) throws Exception{
-        runHistory = new RunHistory(10);
+        runHistory = new RunHistory("Testing name", 10);
         setUpUI();
         stopwatch.addListener(splitContainer.getStopwatchListener());
+        runHistory.addListener(splitContainer.getRunHistoryListener());
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -51,7 +52,6 @@ public class Main extends Application {
                 }
                 if (keyEvent.getCode() == KeyCode.A) {
                     stopwatch.reset();
-                    splitContainer.setRunHistory(runHistory);
                 }
             }
         });

@@ -3,6 +3,7 @@ package ktime.ui.layout;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import ktime.data.RunHistory;
+import ktime.data.RunHistoryListener;
 import ktime.data.RunMetadata;
 import ktime.data.SplitTimes;
 import ktime.ui.DefaultSegmentDisplay;
@@ -118,6 +119,49 @@ public class VSplitContainer implements SplitContainer{
                 }
             }
         };
+    }
+
+    @Override
+    public RunHistoryListener getRunHistoryListener() {
+        return new RunHistoryListener() {
+            @Override
+            public void onChanged(Change change) {
+                switch (change.getChangeType()) {
+                    case NEW_ATEMPT:
+                        if(change.wasBestRun()) {
+                            setLastSegmentTimes(change.getNewAttempt());
+                        }
+                        //TODO: update appropriate splits times with best split times if needed.
+                        break;
+                    case DISPLAY_MODE_CHANGE:
+                        if(change.isDisplayBestSegments()) {
+                            setLastSegmentTimes(change.getNewBestSplits());
+                        } else {
+                            setLastSegmentTimes(change.getNewAttempt());
+                        }
+                        break;
+                    case RESET_ATTEMPTS:
+                        break;
+                    case RUN_NAME_CHANGE:
+                        break;
+                    case SEGMENT_NAME_CHANGE:
+                        segments.get(change.getAlteredSegment()).setName(change.getNewSegmentName());
+                        break;
+                    case SEGMENT_IMAGE_CHANGE:
+                        segments.get(change.getAlteredSegment()).setName(change.getNewSegmentImageUri());
+                        break;
+
+                }
+            }
+        };
+    }
+
+    private void setLastSegmentTimes(SplitTimes timesToUse) {
+        for (int i = 0; i < timesToUse.getNumSegments(); i++) {
+            segments.get(i).setLastSegmentEnd(timesToUse.getSegmentEndTime(i));
+            segments.get(i).setLastSegmentTime(timesToUse.getSegmentTime(i));
+            segments.get(i).displayLastRunTimes();
+        }
     }
 
 }

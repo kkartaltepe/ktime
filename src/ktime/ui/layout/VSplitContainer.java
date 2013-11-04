@@ -43,8 +43,16 @@ public class VSplitContainer implements SplitContainer{
     }
 
     @Override
-    public void setActualTime(int splitIndex, Long time) {
+    public void setActualSegmentTime(int splitIndex, Long time) {
         splits.get(splitIndex).setActualTime(time);
+//        splits.get(splitIndex).displayLastSegmentDelta();
+    }
+
+    @Override
+    public void setSegmentEndTime(int splitIndex, Long time) {
+        splits.get(splitIndex).setActualSegmentEnd(time);
+//        splits.get(splitIndex).displayLastRunDelta();
+
     }
 
     @Override
@@ -76,7 +84,8 @@ public class VSplitContainer implements SplitContainer{
             splitDisplay.setName(runMetadata.getSplitName(i));
             splitDisplay.setImageUrl(runMetadata.getSplitImageUri(i));
             if(toDisplay != null) {
-                splitDisplay.setTime(toDisplay.getSegmentTime(i));
+                splitDisplay.setLastTime(toDisplay.getSegmentTime(i));
+                splitDisplay.setLastSegmentEnd(toDisplay.getSegmentEndTime(i));
             }
             addSplit(splitDisplay);
         }

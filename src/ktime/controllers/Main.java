@@ -42,11 +42,15 @@ public class Main extends Application {
                         stopwatch.start();
                     } else if (stopwatch.getNumSegments() == runHistory.getRunMetadata().getNumSegments()-1) {
                         stopwatch.stop();
-                        splitContainer.setActualTime(stopwatch.getNumSegments()-1, stopwatch.getCurrentSegmentTime());
+                        int currentSegment = stopwatch.getNumSegments()-1;
+                        splitContainer.setSegmentEndTime(currentSegment, stopwatch.getSplitTimes().getSegmentEndTime(currentSegment));
+                        splitContainer.setActualSegmentTime(currentSegment, stopwatch.getCurrentSegmentTime());
                         runHistory.saveAttempt(stopwatch.getSplitTimes());
                     } else {
                         Long segmentTime = stopwatch.split();
-                        splitContainer.setActualTime(stopwatch.getNumSegments()-1, segmentTime);
+                        int currentSegment = stopwatch.getNumSegments()-1;
+                        splitContainer.setSegmentEndTime(currentSegment, stopwatch.getSplitTimes().getSegmentEndTime(currentSegment));
+                        splitContainer.setActualSegmentTime(currentSegment, segmentTime);
                     }
                 }
                 if (keyEvent.getCode() == KeyCode.Q) {

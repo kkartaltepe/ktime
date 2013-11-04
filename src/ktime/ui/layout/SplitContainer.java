@@ -11,7 +11,8 @@ import ktime.data.RunHistory;
  * To change this template use File | Settings | File Templates.
  */
 public interface SplitContainer {
-    public void setActualTime(int splitIndex, Long time);
+    public void setActualSegmentTime(int splitIndex, Long time);
+    public void setSegmentEndTime(int splitIndex, Long time);
     public void setActiveSplit(int index);
     public int  getActiveSplit();
     public Node getNode();

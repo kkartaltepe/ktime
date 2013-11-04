@@ -28,7 +28,7 @@ public class TimeFormatter {
         duration = TimeUnit.NANOSECONDS.toMillis(duration);
         String durationString = DurationFormatUtils.formatDuration(duration, "HH:mm:ss.SSS"); //Does not handle negative durations at all...
         String trimmedString = trimInsignificantDigits(durationString);
-        if(!signed)
+        if(signed)
             trimmedString = sign + trimmedString;
         return trimmedString;
     }

@@ -21,7 +21,7 @@ public class DefaultSplitDisplay implements SplitDisplay {
     @FXML ImageView image;
     @FXML Text name;
     @FXML Text displayTime;
-    private Long time, actualTime;
+    private Long lastTime, lastSegmentEnd, actualTime, actualSegmentEnd;
     private Node node;
 
     public DefaultSplitDisplay() {
@@ -55,20 +55,18 @@ public class DefaultSplitDisplay implements SplitDisplay {
     }
 
     @Override
-    public void setTime(Long time) {
-        this.time = time;
-        this.displayTime.setText(TimeFormatter.format(time));
+    public void setLastTime(Long lastTime) {
+        this.lastTime = lastTime;
+    }
+
+    @Override
+    public void setLastSegmentEnd(Long segmentEnd) {
+        this.lastSegmentEnd = segmentEnd;
     }
 
     @Override
     public void setActualTime(Long time) {
         this.actualTime = time;
-        if(actualTime != null &&  this.time != null)
-            this.displayTime.setText(TimeFormatter.formatSigned(this.time - this.actualTime));
-        else if (actualTime != null && this.time == null)
-            this.displayTime.setText(TimeFormatter.formatSigned(0 - this.actualTime));
-        else
-            this.displayTime.setText(TimeFormatter.formatSigned(null)); //Skipped unable to compute
     }
 
     @Override
@@ -79,6 +77,30 @@ public class DefaultSplitDisplay implements SplitDisplay {
     @Override
     public void deactivate() {
         node.getStyleClass().remove("activeSplit");
+    }
+
+    @Override
+    public void setActualSegmentEnd(Long time) {
+        this.actualSegmentEnd = time;
+    }
+
+    @Override
+    public void displayLastRunDelta() {
+         computeDisplayTime(lastSegmentEnd, actualSegmentEnd);
+    }
+
+    @Override
+    public void displayLastSegmentDelta() {
+        computeDisplayTime(lastTime, actualTime);
+    }
+
+    private void computeDisplayTime(Long lastTime, Long currentTime) {
+        if(currentTime != null &&  lastTime != null)
+            this.displayTime.setText(TimeFormatter.formatSigned(lastTime - currentTime));
+        else if (currentTime != null && lastTime == null)
+            this.displayTime.setText(TimeFormatter.formatSigned(0 - currentTime));
+        else
+            this.displayTime.setText(TimeFormatter.formatSigned(null)); //Skipped unable to compute
     }
 
 }

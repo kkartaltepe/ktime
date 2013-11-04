@@ -18,10 +18,18 @@ public interface SplitDisplay {
 
     void setName(String name);
 
-    void setTime(Long time);
+    void setLastTime(Long time);
 
     void setActualTime(Long time);
 
     void activate();
     void deactivate();
+
+    void setActualSegmentEnd(Long time);
+
+    void setLastSegmentEnd(Long segmentEnd);
+
+    void displayLastRunDelta();
+
+    void displayLastSegmentDelta();
 }

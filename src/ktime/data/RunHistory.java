@@ -60,6 +60,10 @@ public class RunHistory {
         return bestSplitTimes != null ? new SplitTimes(bestSplitTimes) : null;
     }
 
+    /**
+     * Not safe
+     * @return
+     */
     public List<SplitTimes> getHistoricalTimes() {
         return new ArrayList<SplitTimes>(historicalTimes);
     }

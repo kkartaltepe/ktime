@@ -1,5 +1,7 @@
 package ktime.data;
 
+import ktime.utils.TimeFormatter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,14 +28,7 @@ public class SplitTimes {
 
     public SplitTimes(List<Long> splitTimes) {
         this.splitTimes = new ArrayList<Long>(splitTimes);
-    }
-
-    public void addSplit(int position) {
-        splitTimes.add(position, null);
-    }
-
-    public void addSplit() {
-        addSplit(splitTimes.size());
+        normalize();
     }
 
     public int getNumSegments() {
@@ -42,6 +37,14 @@ public class SplitTimes {
 
     public Long getSegmentTime(int segment) {
        return calculateSegmentTime(segment);
+    }
+
+    public Long getSegmentStartTime(int segment) {
+        return splitTimes.get(segment);
+    }
+
+    public Long getSegmentEndTime(int segment) {
+        return splitTimes.get(segment+1);
     }
 
     public List<Long> getSegmentTimes() {
@@ -64,6 +67,7 @@ public class SplitTimes {
         }
 
         splitTimes.set(segment+1, newSegEnd);
+        normalize();
     }
 
     private void shiftSplits(int startSplit, long shiftBy) {
@@ -71,6 +75,7 @@ public class SplitTimes {
             if(splitTimes.get(i) != null)
                 splitTimes.set(i, splitTimes.get(i)+shiftBy);
         }
+        normalize();
     }
 
     private Long calculateSegmentTime(int segment) {
@@ -92,6 +97,31 @@ public class SplitTimes {
             split++;
         }
         return splitTimes.size() - 1;
+    }
+
+    private void normalize() {
+        int firstSplit = getNextNonNullSplit(0);
+        if(firstSplit == splitTimes.size()-1 && splitTimes.get(firstSplit) != null)
+            throw new IllegalStateException("This split time is malformed");
+        if(firstSplit == splitTimes.size()-1 && splitTimes.get(firstSplit) == null)
+            return;
+        long normalizingDelta = 0L - splitTimes.get(firstSplit);
+        for(int i = firstSplit; i < splitTimes.size(); i++) {
+            Long splitTime = splitTimes.get(i);
+            if(splitTime != null) {
+                long normalized = splitTime + normalizingDelta;
+                splitTimes.set(i, normalized);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        String ret = "[";
+        for(int i = 0; i < splitTimes.size(); i++) {
+            ret += TimeFormatter.format(splitTimes.get(i)) + ", ";
+        }
+        return ret + "]";
     }
 
     public Long getTotalTime() {

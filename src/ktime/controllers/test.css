@@ -6,6 +6,22 @@
     -fx-fill: #DDDDDD;
 }
 
+.positiveRunPositiveSeg {
+    -fx-fill: #FF0000
+}
+
+.positiveRunNegativeSeg {
+    -fx-fill: #0000FF
+}
+
+.negativeRunNegativeSeg {
+    -fx-fill: #00FF00
+}
+
+.negativeRunPositiveSeg {
+    -fx-fill: #FF8000
+}
+
 .split {
     -fx-border-width: 1px 0px 1px 0px;
     -fx-border-color: #304050;

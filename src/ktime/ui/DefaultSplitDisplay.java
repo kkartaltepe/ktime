@@ -86,21 +86,44 @@ public class DefaultSplitDisplay implements SplitDisplay {
 
     @Override
     public void displayLastRunDelta() {
-         computeDisplayTime(lastSegmentEnd, actualSegmentEnd);
+        Long delta = computeDelta(lastSegmentEnd, actualSegmentEnd);
+        displayTime.setText(TimeFormatter.formatSigned(delta));
+        computeSplitStyleClass();
     }
 
     @Override
     public void displayLastSegmentDelta() {
-        computeDisplayTime(lastTime, actualTime);
+        Long delta = computeDelta(lastTime, actualTime);
+        displayTime.setText(TimeFormatter.formatSigned(delta));
+        computeSplitStyleClass();
     }
 
-    private void computeDisplayTime(Long lastTime, Long currentTime) {
+    private Long computeDelta(Long lastTime, Long currentTime) {
+        Long delta;
         if(currentTime != null &&  lastTime != null)
-            this.displayTime.setText(TimeFormatter.formatSigned(lastTime - currentTime));
+            delta = currentTime - lastTime;
         else if (currentTime != null && lastTime == null)
-            this.displayTime.setText(TimeFormatter.formatSigned(0 - currentTime));
+            delta = 0 - currentTime;
         else
-            this.displayTime.setText(TimeFormatter.formatSigned(null)); //Skipped unable to compute
+            delta = null; //Skipped unable to compute
+        return delta;
+    }
+
+    private void computeSplitStyleClass() {
+        Long segmentDelta = computeDelta(lastSegmentEnd, actualSegmentEnd);
+        Long runDelta = computeDelta(lastTime, actualTime);
+        if(segmentDelta == null || runDelta == null)
+            return; //No styling.
+        displayTime.getStyleClass().retainAll("text", "splitDisplayTime");
+        if(segmentDelta > 0 && runDelta > 0)
+            displayTime.getStyleClass().add("positiveRunPositiveSeg");
+        if(segmentDelta > 0 && runDelta < 0)
+            displayTime.getStyleClass().add("positiveRunNegativeSeg");
+        if(segmentDelta < 0 && runDelta > 0)
+            displayTime.getStyleClass().add("negativeRunPositiveSeg");
+        if(segmentDelta < 0 && runDelta < 0)
+            displayTime.getStyleClass().add("negativeRunNegativeSeg");
+
     }
 
 }

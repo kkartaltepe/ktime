@@ -45,14 +45,13 @@ public class VSplitContainer implements SplitContainer{
     @Override
     public void setActualSegmentTime(int splitIndex, Long time) {
         splits.get(splitIndex).setActualTime(time);
-//        splits.get(splitIndex).displayLastSegmentDelta();
+        splits.get(splitIndex).displayLastRunDelta();
     }
 
     @Override
     public void setSegmentEndTime(int splitIndex, Long time) {
         splits.get(splitIndex).setActualSegmentEnd(time);
-//        splits.get(splitIndex).displayLastRunDelta();
-
+        splits.get(splitIndex).displayLastRunDelta();
     }
 
     @Override

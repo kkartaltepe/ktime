@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class TimeFormatter {
 
     public static final String NO_TIME = "no time";
+    public static final String CANNOT_COMPUTE_DELTA = "CNC Delta";
 
     /**
      * Will always return a positive value for the length of the represented.
@@ -39,6 +40,12 @@ public class TimeFormatter {
 
     public static String formatSigned(Long duration) {
         return formatTime(duration, true);
+    }
+
+    public static String formatDelta(Long firstTimeStamp, Long secondTimeStamp) {
+        if(firstTimeStamp == null || secondTimeStamp == null)
+            return CANNOT_COMPUTE_DELTA;
+        return formatTime(firstTimeStamp - secondTimeStamp, true);
     }
 
     private static String trimInsignificantDigits(String durationString) {

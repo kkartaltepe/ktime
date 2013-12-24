@@ -10,8 +10,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ktime.data.RunHistory;
-import ktime.ui.DefaultDetailedSplitDisplay;
-import ktime.ui.DetailedSplitDisplay;
+import ktime.ui.DefaultDetailedSegmentDisplay;
+import ktime.ui.DetailedSegmentDisplay;
 import ktime.ui.layout.SplitContainer;
 import ktime.ui.layout.VSplitContainer;
 import ktime.utils.stopwatch.DefaultStopwatch;
@@ -24,7 +24,7 @@ public class Main extends Application {
     ObservableStopwatch stopwatch = new DefaultStopwatch();
     RunHistory runHistory;
     SplitContainer splitContainer;
-    DetailedSplitDisplay detailedSplit;
+    DetailedSegmentDisplay detailedSplit;
     private Scene scene;
 
 
@@ -32,7 +32,9 @@ public class Main extends Application {
     public void start(final Stage primaryStage) throws Exception{
         runHistory = new RunHistory("Testing name", 10);
         setUpUI();
+        detailedSplit.setRunHistory(runHistory);
         stopwatch.addListener(splitContainer.getStopwatchListener());
+        stopwatch.addListener(detailedSplit.getStopwatchListener());
         runHistory.addListener(splitContainer.getRunHistoryListener());
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -59,6 +61,7 @@ public class Main extends Application {
             @Override
             public void handle(long l) {
                 detailedSplit.setCurrentTime(stopwatch.getTotalTime());
+                detailedSplit.setCurrentSegmentTime(stopwatch.getCurrentSegmentTime());
             }
         }.start();
         primaryStage.setScene(scene);
@@ -80,7 +83,7 @@ public class Main extends Application {
         splitContainer = new VSplitContainer();
         root.getChildren().add(splitContainer.getNode());
         splitContainer.setRunHistory(runHistory);
-        detailedSplit = new DefaultDetailedSplitDisplay();
+        detailedSplit = new DefaultDetailedSegmentDisplay();
         root.getChildren().add(detailedSplit.getNode());
         scene = new Scene(root);
         scene.getStylesheets().add("ktime/controllers/test.css");
@@ -90,9 +93,5 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    public void handle(long l) {
-        detailedSplit.setCurrentTime(stopwatch.getTotalTime());
     }
 }

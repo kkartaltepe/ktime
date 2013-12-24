@@ -80,7 +80,7 @@ public class DefaultStopwatch implements ObservableStopwatch {
 
     @Override
     public void unsplit() {
-        if(!running || splitTimes.size() < 2) //We will always have at least one split (read: segment).
+        if(!running || splitTimes.size() < 2) //We will always have at least one segment.
             throw new IllegalStateException("You must split first.");
         splitTimes.remove(splitTimes.size()-1);
         segmentTimes.remove(segmentTimes.size()-1);
@@ -88,7 +88,7 @@ public class DefaultStopwatch implements ObservableStopwatch {
     }
 
     @Override
-    public int getNumSegments() { //Segments colloquial called splits
+    public int getNumSegments() { //Span of time from a beginning to an end
         return segmentTimes.size();
     }
 
@@ -131,7 +131,7 @@ public class DefaultStopwatch implements ObservableStopwatch {
     @Override
     public Long getCurrentSegmentTime() {
         if(splitTimes.size() == 0)
-            throw new IllegalStateException("Stopwatch must have been started first.");
+            return 0L;
         if (!running)
             return segmentTimes.get(segmentTimes.size() -1); //Just get the last segment since we have stopped.
         return getNormalizedTime() - splitTimes.get(splitTimes.size() - 1); //Measure from last split to now.

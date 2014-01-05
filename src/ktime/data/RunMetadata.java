@@ -111,6 +111,24 @@ public class RunMetadata {
         this.attempts = numAttempts;
     }
 
+    public String getRunName() {
+        return runName;
+    }
+
+    public void setRunName(String newRunName) {
+        this.runName = newRunName;
+        notifyListeners(new AbstractRunHistoryChange() {
+            @Override
+            public RunHistoryListener.RunHistoryEventType getChangeType() {
+                return RunHistoryListener.RunHistoryEventType.RUN_NAME_CHANGE;
+            }
+
+            public String getNewRunName() {
+                return runName;
+            }
+        });
+    }
+
     public void notifyListeners(RunHistoryListener.Change change) {
         for (RunHistoryListener listener : runHistoryListeners) {
             listener.onChanged(change);

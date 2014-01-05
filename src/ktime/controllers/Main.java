@@ -10,10 +10,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ktime.data.RunHistory;
-import ktime.ui.DefaultDetailedSegmentDisplay;
-import ktime.ui.DetailedSegmentDisplay;
-import ktime.ui.layout.SplitContainer;
-import ktime.ui.layout.VSplitContainer;
+import ktime.ui.main.layout.SplitContainer;
+import ktime.ui.main.layout.VSplitContainer;
+import ktime.ui.main.layout.individual.DefaultDetailedSegmentDisplay;
+import ktime.ui.main.layout.individual.DetailedSegmentDisplay;
+import ktime.ui.main.title.DefaultSimpleTitleBar;
+import ktime.ui.main.title.SimpleTitleBar;
+import ktime.ui.settings.SettingsWindow;
 import ktime.utils.stopwatch.DefaultStopwatch;
 import ktime.utils.stopwatch.ObservableStopwatch;
 
@@ -23,9 +26,11 @@ public class Main extends Application {
 
     ObservableStopwatch stopwatch = new DefaultStopwatch();
     RunHistory runHistory;
+    SimpleTitleBar titleBar;
     SplitContainer splitContainer;
     DetailedSegmentDisplay detailedSplit;
     private Scene scene;
+    private SettingsWindow settingsWindow;
 
 
     @Override
@@ -36,6 +41,7 @@ public class Main extends Application {
         stopwatch.addListener(splitContainer.getStopwatchListener());
         stopwatch.addListener(detailedSplit.getStopwatchListener());
         runHistory.addListener(splitContainer.getRunHistoryListener());
+        runHistory.addListener(titleBar.getRunHistoryListener());
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -52,6 +58,11 @@ public class Main extends Application {
                 if (keyEvent.getCode() == KeyCode.Q) {
                     primaryStage.close();
                 }
+                if (keyEvent.getCode() == KeyCode.S) {
+                    Stage settingsStage = new Stage();
+                    settingsStage.setScene(new Scene(settingsWindow.getNode()));
+                    settingsStage.show();
+                }
                 if (keyEvent.getCode() == KeyCode.A) {
                     stopwatch.reset();
                 }
@@ -65,6 +76,7 @@ public class Main extends Application {
             }
         }.start();
         primaryStage.setScene(scene);
+//        primaryStage.sizeToScene();
 //        primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.show();
         primaryStage.setMinHeight(primaryStage.getHeight()+24);
@@ -80,6 +92,8 @@ public class Main extends Application {
             throw new RuntimeException("main.fxml not found");
         }
         root.setFillWidth(true);
+        titleBar = new DefaultSimpleTitleBar(runHistory);
+        root.getChildren().add(titleBar.getNode());
         splitContainer = new VSplitContainer();
         root.getChildren().add(splitContainer.getNode());
         splitContainer.setRunHistory(runHistory);
@@ -87,6 +101,7 @@ public class Main extends Application {
         root.getChildren().add(detailedSplit.getNode());
         scene = new Scene(root);
         scene.getStylesheets().add("ktime/controllers/test.css");
+        settingsWindow = new SettingsWindow();
 
     }
 

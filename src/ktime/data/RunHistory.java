@@ -147,6 +147,67 @@ public class RunHistory implements ObservableRunHistory{
     @Override
     public void addListener(RunHistoryListener runHistoryListener) {
         runHistoryListeners.add(runHistoryListener);
+        runHistoryListener.onChanged(new RunHistoryListener.Change() {
+            @Override
+            public RunHistoryListener.RunHistoryEventType getChangeType() {
+                return RunHistoryListener.RunHistoryEventType.CURRENT_STATE;
+            }
+
+            @Override
+            public boolean wasAttemptSaved() {
+                return false;
+            }
+
+            @Override
+            public int getNewNumAttempts() {
+                return metadata.getNumAttempts();
+            }
+
+            @Override
+            public SplitTimes getNewAttempt() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public boolean wasBestRun() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public List<Integer> getChangedBestSegments() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public SplitTimes getNewBestSplits() {
+                return bestSplitTimes;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getNewRunName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public int getAlteredSegment() {
+                return 0;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getNewSegmentName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getNewSegmentImageUri() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public boolean isDisplayBestSegments() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
     }
 
     @Override

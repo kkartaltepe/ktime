@@ -17,6 +17,8 @@ import ktime.ui.main.layout.individual.DetailedSegmentDisplay;
 import ktime.ui.main.title.DefaultSimpleTitleBar;
 import ktime.ui.main.title.SimpleTitleBar;
 import ktime.ui.settings.SettingsWindow;
+import ktime.utils.data.DefaultSaveUtility;
+import ktime.utils.data.SaveUtility;
 import ktime.utils.stopwatch.DefaultStopwatch;
 import ktime.utils.stopwatch.ObservableStopwatch;
 
@@ -25,6 +27,7 @@ import java.io.IOException;
 public class Main extends Application {
 
     ObservableStopwatch stopwatch = new DefaultStopwatch();
+    SaveUtility saveUtility;
     RunHistory runHistory;
     SimpleTitleBar titleBar;
     SplitContainer splitContainer;
@@ -35,7 +38,8 @@ public class Main extends Application {
 
     @Override
     public void start(final Stage primaryStage) throws Exception{
-        runHistory = new RunHistory("Testing name", 10);
+        saveUtility = new DefaultSaveUtility();
+        runHistory = saveUtility.loadRunHistory("test.krh");
         setUpUI();
         detailedSplit.setRunHistory(runHistory);
         stopwatch.addListener(splitContainer.getStopwatchListener());
@@ -56,6 +60,11 @@ public class Main extends Application {
                     }
                 }
                 if (keyEvent.getCode() == KeyCode.Q) {
+                    try {
+                        saveUtility.saveRunHistory("test.krh", runHistory);
+                    } catch (IOException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
                     primaryStage.close();
                 }
                 if (keyEvent.getCode() == KeyCode.S) {

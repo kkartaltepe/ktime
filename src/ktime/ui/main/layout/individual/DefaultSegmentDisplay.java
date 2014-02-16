@@ -40,8 +40,9 @@ public class DefaultSegmentDisplay implements SegmentDisplay {
     }
 
     @Override
-    public void setImageUri(String imageUrl) {
-        image.setImage(new Image(imageUrl));
+    public void setImageUri(String imageUri) {
+        if(imageUri != null)
+            image.setImage(new Image(imageUri));
     }
 
     @Override

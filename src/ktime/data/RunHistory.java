@@ -13,11 +13,11 @@ import java.util.List;
  * To Change this template use File | Settings | File Templates.
  */
 public class RunHistory implements ObservableRunHistory{
+    RunMetadata metadata;
+    List<SplitTimes> historicalTimes;
     SplitTimes bestSplitTimes;
     SplitTimes bestRun;
-    List<SplitTimes> historicalTimes;
-    RunMetadata metadata;
-    List<RunHistoryListener> runHistoryListeners;
+    transient List<RunHistoryListener> runHistoryListeners;
 
     public RunHistory(String name, int numSegments) {
         runHistoryListeners = new ArrayList<RunHistoryListener>();

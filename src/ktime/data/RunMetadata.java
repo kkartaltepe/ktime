@@ -18,7 +18,16 @@ public class RunMetadata {
     List<String> segmentImageUris;
     int attempts, numSegments;
     boolean displayBestSegments;
-    List<RunHistoryListener> runHistoryListeners;
+    transient List<RunHistoryListener> runHistoryListeners;
+
+    public RunMetadata() {
+        this.runName = null;
+        this.numSegments = 0;
+        segmentImageUris = new ArrayList<String>(numSegments);
+        segmentNames = new ArrayList<String>(numSegments);
+        displayBestSegments = false;
+        this.runHistoryListeners = new ArrayList<RunHistoryListener>();
+    }
 
     public RunMetadata(String name, int numSegments, List<RunHistoryListener> runHistoryListeners) {
         this.runName = name;
@@ -26,15 +35,19 @@ public class RunMetadata {
         segmentImageUris = new ArrayList<String>(numSegments);
         segmentNames = new ArrayList<String>(numSegments);
         for (int i = 0; i < numSegments; i++) {
-            segmentImageUris.add(NO_IMAGE);
-            segmentNames.add(NO_NAME);
+            segmentImageUris.add(null);
+            segmentNames.add(null);
         }
         displayBestSegments = false;
         this.runHistoryListeners = runHistoryListeners;
     }
 
     public String getSegmentName(int splitNum) {
-        return segmentNames.get(splitNum);
+        String segmentName = segmentNames.get(splitNum);
+        if(segmentName != null)
+            return segmentName;
+        else
+            return NO_NAME;
     }
 
     public void setSegmentName(final int segmentNum, final String name) {

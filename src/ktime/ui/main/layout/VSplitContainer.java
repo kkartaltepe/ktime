@@ -42,7 +42,7 @@ public class VSplitContainer implements SplitContainer{
     }
 
     @Override
-    public void getActiveSegment(int segmentIndex) {
+    public void setActiveSegment(int segmentIndex) {
         segments.get(segmentIndex).activate();
     }
 
@@ -88,7 +88,7 @@ public class VSplitContainer implements SplitContainer{
         for(SegmentDisplay segmentDisplay : segments) {
             segmentDisplay.setActualSegmentTime(null);
             segmentDisplay.setActualSegmentEnd(null);
-            segmentDisplay.displayLastRunDelta();
+            segmentDisplay.displayLastRunTimes();
         }
     }
 

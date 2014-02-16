@@ -3,16 +3,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.text.Text?>
-<GridPane fx:id="currentInfo" hgap="7"
+<GridPane fx:id="currentInfo" hgap="7" alignment="BOTTOM_CENTER" gridLinesVisible="TRUE" minWidth="250"
           xmlns:fx="http://javafx.com/fxml">
     <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="LEFT" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
         <HBox>
-            <Label>Current Split:</Label>
-            <Text fx:id="currentSplitTime" styleClass="text">--</Text>
+            <Label>Current Segment:</Label>
+            <Text fx:id="currentSegmentTime" styleClass="text">--</Text>
         </HBox>
         <HBox>
-            <Label>Best Split:</Label>
-            <Text fx:id="bestSplitTime" styleClass="text">--</Text>
+            <Label>Best Segment:</Label>
+            <Text fx:id="bestSegmentTime" styleClass="text">--</Text>
         </HBox>
     </VBox>
     <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" GridPane.halignment="RIGHT" alignment="TOP_RIGHT">

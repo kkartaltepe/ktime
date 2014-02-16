@@ -23,8 +23,8 @@ public class DefaultDetailedSegmentDisplay implements DetailedSegmentDisplay {
     RunHistory history;
     int currentSplit;
     @FXML private Text currentTime;
-    @FXML private Text currentSplitTime;
-    @FXML private Text bestSplitTime;
+    @FXML private Text currentSegmentTime;
+    @FXML private Text bestSegmentTime;
     @FXML private Text previousSplitDelta;
 
 
@@ -50,7 +50,7 @@ public class DefaultDetailedSegmentDisplay implements DetailedSegmentDisplay {
 
     @Override
     public void setCurrentSegmentTime(long currentSegmentTime) {
-        this.currentSplitTime.setText(TimeFormatter.format(currentSegmentTime));
+        this.currentSegmentTime.setText(TimeFormatter.format(currentSegmentTime));
     }
 
     @Override
@@ -69,10 +69,10 @@ public class DefaultDetailedSegmentDisplay implements DetailedSegmentDisplay {
                     case RESET:
                     case START:
                         previousSplitDelta.setText(TimeFormatter.CANNOT_COMPUTE_DELTA);
-                        bestSplitTime.setText(TimeFormatter.format(history.getBestRunTimes().getSegmentEndTime(0)));
+                        bestSegmentTime.setText(TimeFormatter.format(history.getBestRunTimes().getSegmentEndTime(0)));
                         break;
                     case SPLIT:
-                        bestSplitTime.setText(TimeFormatter.format(history.getBestRunTimes().getSegmentTime(change.getChangedSplit())));
+                        bestSegmentTime.setText(TimeFormatter.format(history.getBestRunTimes().getSegmentTime(change.getChangedSplit())));
                     case STOP:
                         Long bestSegmentTime = history.getBestRunTimes().getSegmentTime(change.getChangedSplit() - 1);
                         String formattedDelta = TimeFormatter.formatDelta(bestSegmentTime, change.getNewSegmentTime());
@@ -83,7 +83,7 @@ public class DefaultDetailedSegmentDisplay implements DetailedSegmentDisplay {
                         break;
                     case SKIPSPLIT:
                         previousSplitDelta.setText(TimeFormatter.CANNOT_COMPUTE_DELTA);
-                        bestSplitTime.setText(TimeFormatter.format(history.getBestRunTimes().getSegmentTime(change.getChangedSplit()-1)));
+                        DefaultDetailedSegmentDisplay.this.bestSegmentTime.setText(TimeFormatter.format(history.getBestRunTimes().getSegmentTime(change.getChangedSplit() - 1)));
                         break;
                 }
             }

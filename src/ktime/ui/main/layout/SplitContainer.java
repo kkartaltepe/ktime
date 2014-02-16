@@ -15,7 +15,7 @@ import ktime.utils.stopwatch.StopwatchListener;
 public interface SplitContainer {
     public void setActualSegmentTime(int splitIndex, Long time);
     public void setActualSegmentEnd(int splitIndex, Long time);
-    public void getActiveSegment(int index);
+    public void setActiveSegment(int index);
     public int getActiveSegment();
     public Node getNode();
 

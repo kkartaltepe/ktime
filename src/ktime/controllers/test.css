@@ -22,8 +22,14 @@
     -fx-fill: #FF8000
 }
 
+#titleBar {
+    -fx-border-width: 0px 0px 1px 0px;
+    -fx-border-color: #304050;
+    -fx-background-color: inherit;
+}
+
 .split {
-    -fx-border-width: 1px 0px 1px 0px;
+    -fx-border-width: 0px 0px 1px 0px;
     -fx-border-color: #304050;
     -fx-background-color: inherit;
 }

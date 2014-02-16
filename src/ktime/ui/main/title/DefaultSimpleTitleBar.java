@@ -1,7 +1,9 @@
 package ktime.ui.main.title;
 
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import ktime.data.RunHistory;
 import ktime.data.RunHistoryListener;
 
@@ -15,9 +17,14 @@ import ktime.data.RunHistoryListener;
 public class DefaultSimpleTitleBar implements SimpleTitleBar {
 
     Label title;
+    HBox container;
 
     public DefaultSimpleTitleBar(RunHistory runHistory) {
+        container = new HBox();
+        container.setId("titleBar");
+        container.setAlignment(Pos.BASELINE_CENTER);
         title = new Label(runHistory.getRunMetadata().getRunName());
+        container.getChildren().add(title);
     }
 
     @Override
@@ -27,7 +34,7 @@ public class DefaultSimpleTitleBar implements SimpleTitleBar {
 
     @Override
     public Node getNode() {
-        return title;
+        return container;
     }
 
     @Override

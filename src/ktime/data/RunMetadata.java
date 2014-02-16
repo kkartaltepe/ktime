@@ -35,7 +35,7 @@ public class RunMetadata {
         segmentImageUris = new ArrayList<String>(numSegments);
         segmentNames = new ArrayList<String>(numSegments);
         for (int i = 0; i < numSegments; i++) {
-            segmentImageUris.add(null);
+            segmentImageUris.add(NO_IMAGE);
             segmentNames.add(null);
         }
         displayBestSegments = false;

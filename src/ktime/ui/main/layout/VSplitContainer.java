@@ -67,6 +67,7 @@ public class VSplitContainer implements SplitContainer{
             if(oldSplits != null) {
                 segmentDisplay.setLastSegmentTime(oldSplits.getSegmentTime(i));
                 segmentDisplay.setLastSegmentEnd(oldSplits.getSegmentEndTime(i));
+                segmentDisplay.displayLastRunTimes();
             }
             addSegment(segmentDisplay);
         }

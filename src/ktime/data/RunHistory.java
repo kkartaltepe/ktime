@@ -19,6 +19,13 @@ public class RunHistory implements ObservableRunHistory{
     SplitTimes bestRun;
     transient List<RunHistoryListener> runHistoryListeners;
 
+
+    public RunHistory() {
+        runHistoryListeners = new ArrayList<RunHistoryListener>();
+        historicalTimes = new ArrayList<SplitTimes>();
+        metadata = new RunMetadata(null, 0, runHistoryListeners);
+    }
+
     public RunHistory(String name, int numSegments) {
         runHistoryListeners = new ArrayList<RunHistoryListener>();
         historicalTimes = new ArrayList<SplitTimes>();

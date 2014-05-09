@@ -18,18 +18,8 @@ public interface SegmentDisplay {
 
     void setName(String name);
 
-    void setLastSegmentTime(Long time);
-
-    void setActualSegmentTime(Long time);
+    void setDisplayTime(Long time, String style);
 
     void activate();
-    void deactivate();
-
-    void setActualSegmentEnd(Long time);
-
-    void setLastSegmentEnd(Long segmentEnd);
-
-    void displayLastRunDelta();
-    void displayLastSegmentDelta();
-    void displayLastRunTimes();
+    void deactivate();;
 }

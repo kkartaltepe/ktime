@@ -13,8 +13,6 @@ import ktime.utils.stopwatch.StopwatchListener;
  * To Change this template use File | Settings | File Templates.
  */
 public interface SplitContainer {
-    public void setActualSegmentTime(int splitIndex, Long time);
-    public void setActualSegmentEnd(int splitIndex, Long time);
     public void setActiveSegment(int index);
     public int getActiveSegment();
     public Node getNode();
@@ -23,6 +21,6 @@ public interface SplitContainer {
 
     void reset();
 
-    StopwatchListener getStopwatchListener();
     RunHistoryListener getRunHistoryListener();
+    StopwatchListener getStopwatchListener();
 }

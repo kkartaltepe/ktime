@@ -12,6 +12,12 @@ import java.util.List;
  */
 abstract public class AbstractRunHistoryChange implements RunHistoryListener.Change {
 
+    private final RunMetadata metadata;
+
+    public AbstractRunHistoryChange(RunMetadata metadata) {
+        this.metadata = metadata;
+    }
+
     @Override
     public boolean wasAttemptSaved() {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
@@ -19,7 +25,7 @@ abstract public class AbstractRunHistoryChange implements RunHistoryListener.Cha
 
     @Override
     public int getNewNumAttempts() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return metadata.getNumAttempts();  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -44,7 +50,7 @@ abstract public class AbstractRunHistoryChange implements RunHistoryListener.Cha
 
     @Override
     public String getNewRunName() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return metadata.getRunName();  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -63,7 +69,24 @@ abstract public class AbstractRunHistoryChange implements RunHistoryListener.Cha
     }
 
     @Override
-    public boolean isDisplayBestSegments() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public RunHistoryListener.DeltaDisplayMode getDeltaDisplayMode() {
+        return metadata.getDeltaDisplayMode();  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public RunHistoryListener.SplitDisplayMode getSplitDisplayMode() {
+        return metadata.getSplitDisplayMode();  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public int getChangedSplit() {
+        return 0;
+    }
+
+    public Long getNewSegmentTime(){
+        return null;
+    }
+
+    public Long getNewSplitTime() {
+        return null;
     }
 }

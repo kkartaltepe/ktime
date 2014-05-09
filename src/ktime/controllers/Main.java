@@ -42,8 +42,8 @@ public class Main extends Application {
         runHistory = saveUtility.loadRunHistory("test.krh");
         setUpUI();
         detailedSplit.setRunHistory(runHistory);
+        stopwatch.addListener(runHistory.getStopwatchListener());
         stopwatch.addListener(splitContainer.getStopwatchListener());
-        stopwatch.addListener(detailedSplit.getStopwatchListener());
         runHistory.addListener(splitContainer.getRunHistoryListener());
         runHistory.addListener(titleBar.getRunHistoryListener());
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -57,6 +57,11 @@ public class Main extends Application {
                         runHistory.saveAttempt(stopwatch.getSplitTimes());
                     } else {
                         stopwatch.split();
+                    }
+                }
+                if (keyEvent.getCode() == KeyCode.U) {
+                    if(stopwatch.isRunning() && stopwatch.getNumSegments() > 0) {
+                        stopwatch.unsplit();
                     }
                 }
                 if (keyEvent.getCode() == KeyCode.Q) {

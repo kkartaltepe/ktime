@@ -1,6 +1,7 @@
 package ktime.data;
 
 import javafx.beans.InvalidationListener;
+import ktime.utils.stopwatch.StopwatchListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,30 +38,20 @@ public class RunHistory implements ObservableRunHistory{
      */
     public void resetAttempts() {
         metadata.setNumAttempts(historicalTimes.size());
-        notifyListeners(new AbstractRunHistoryChange() {
+        notifyListeners(new AbstractRunHistoryChange(metadata) {
             @Override
             public RunHistoryListener.RunHistoryEventType getChangeType() {
                 return RunHistoryListener.RunHistoryEventType.RESET_ATTEMPTS;
-            }
-
-            @Override
-            public int getNewNumAttempts() {
-                return metadata.getNumAttempts();
             }
         });
     }
 
     public void addUnsavedAttempt() {
         metadata.setNumAttempts(metadata.getNumAttempts()+1);
-        notifyListeners(new AbstractRunHistoryChange() {
+        notifyListeners(new AbstractRunHistoryChange(metadata) {
             @Override
             public RunHistoryListener.RunHistoryEventType getChangeType() {
                 return RunHistoryListener.RunHistoryEventType.NEW_ATEMPT;
-            }
-
-            @Override
-            public int getNewNumAttempts() {
-                return metadata.getNumAttempts();
             }
 
             @Override
@@ -93,7 +84,7 @@ public class RunHistory implements ObservableRunHistory{
         } else {
             wasBestRun = false;
         }
-        notifyListeners(new AbstractRunHistoryChange() {
+        notifyListeners(new AbstractRunHistoryChange(metadata) {
             @Override
             public RunHistoryListener.RunHistoryEventType getChangeType() {
                 return RunHistoryListener.RunHistoryEventType.NEW_ATEMPT;
@@ -110,7 +101,7 @@ public class RunHistory implements ObservableRunHistory{
 
             @Override
             public SplitTimes getNewBestSplits() {
-                return bestSplitTimes;
+                return getBestSplitTimes();
             }
 
             @Override
@@ -145,6 +136,16 @@ public class RunHistory implements ObservableRunHistory{
         return metadata;
     }
 
+    public SplitTimes getSplitsToDisplay() {
+        switch (metadata.getSplitDisplayMode()) {
+            case BEST_SEGMENTS:
+                return getBestSplitTimes();
+            case BEST_RUN:
+            default:
+                return getBestRunTimes();
+        }
+    }
+
     private void notifyListeners(RunHistoryListener.Change change) {
         for (RunHistoryListener listener : runHistoryListeners) {
             listener.onChanged(change);
@@ -154,65 +155,15 @@ public class RunHistory implements ObservableRunHistory{
     @Override
     public void addListener(RunHistoryListener runHistoryListener) {
         runHistoryListeners.add(runHistoryListener);
-        runHistoryListener.onChanged(new RunHistoryListener.Change() {
+        runHistoryListener.onChanged(new AbstractRunHistoryChange(metadata) {
             @Override
             public RunHistoryListener.RunHistoryEventType getChangeType() {
                 return RunHistoryListener.RunHistoryEventType.CURRENT_STATE;
             }
 
             @Override
-            public boolean wasAttemptSaved() {
-                return false;
-            }
-
-            @Override
-            public int getNewNumAttempts() {
-                return metadata.getNumAttempts();
-            }
-
-            @Override
-            public SplitTimes getNewAttempt() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean wasBestRun() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public List<Integer> getChangedBestSegments() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
             public SplitTimes getNewBestSplits() {
                 return bestSplitTimes;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public String getNewRunName() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public int getAlteredSegment() {
-                return 0;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public String getNewSegmentName() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public String getNewSegmentImageUri() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean isDisplayBestSegments() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
         });
     }
@@ -230,5 +181,28 @@ public class RunHistory implements ObservableRunHistory{
     @Override
     public void removeListener(InvalidationListener invalidationListener) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public StopwatchListener getStopwatchListener() {
+        return new StopwatchListener() {
+            @Override
+            public void onChanged(Change change) {
+                switch (change.getChangeType()) {
+                    case START:
+
+                        break;
+                    case STOP:
+                        break;
+                    case RESET:
+                        break;
+                    case SPLIT:
+                        break;
+                    case UNSPLIT:
+                        break;
+                    case SKIPSPLIT:
+                        break;
+                }
+            }
+        };
     }
 }

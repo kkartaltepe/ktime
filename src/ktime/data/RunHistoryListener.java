@@ -15,6 +15,10 @@ public interface RunHistoryListener {
     public interface Change {
         public RunHistoryEventType getChangeType();
 
+        public int getChangedSplit();
+        public Long getNewSegmentTime();
+        public Long getNewSplitTime();
+
         public boolean wasAttemptSaved();
         public int getNewNumAttempts();
         public SplitTimes getNewAttempt();
@@ -25,11 +29,22 @@ public interface RunHistoryListener {
         public int getAlteredSegment();
         public String getNewSegmentName();
         public String getNewSegmentImageUri();
-        public boolean isDisplayBestSegments();
+        public DeltaDisplayMode getDeltaDisplayMode();
+        public SplitDisplayMode getSplitDisplayMode();
 
     }
 
     public enum RunHistoryEventType {
-        NEW_ATEMPT, RESET_ATTEMPTS, RUN_NAME_CHANGE, SEGMENT_NAME_CHANGE, SEGMENT_IMAGE_CHANGE, DISPLAY_MODE_CHANGE, CURRENT_STATE
+        NEW_ATEMPT, RESET_ATTEMPTS, RUN_NAME_CHANGE, SEGMENT_NAME_CHANGE,
+        SEGMENT_IMAGE_CHANGE, DISPLAY_SPLIT_MODE_CHANGE, DISPLAY_DELTA_MODE_CHANGE,
+        CURRENT_STATE, START, STOP, RESET, SPLIT, UNSPLIT, SKIPSPLIT
+    }
+
+    public enum DeltaDisplayMode {
+        BEST_RUN, BEST_SEGMENTS, NONE
+    }
+
+    public enum SplitDisplayMode {
+        BEST_RUN, BEST_SEGMENTS
     }
 }

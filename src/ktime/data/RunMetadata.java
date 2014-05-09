@@ -18,7 +18,10 @@ public class RunMetadata {
     List<String> segmentImageUris;
     int attempts, numSegments;
     boolean displayBestSegments;
+    boolean displayRunDelta;
     transient List<RunHistoryListener> runHistoryListeners;
+    private RunHistoryListener.DeltaDisplayMode deltaDisplayMode;
+    private RunHistoryListener.SplitDisplayMode splitDisplayMode;
 
     public RunMetadata() {
         this.runName = null;
@@ -26,7 +29,10 @@ public class RunMetadata {
         segmentImageUris = new ArrayList<String>(numSegments);
         segmentNames = new ArrayList<String>(numSegments);
         displayBestSegments = false;
+        displayRunDelta = false;
         this.runHistoryListeners = new ArrayList<RunHistoryListener>();
+        deltaDisplayMode = RunHistoryListener.DeltaDisplayMode.BEST_RUN;
+        splitDisplayMode = RunHistoryListener.SplitDisplayMode.BEST_RUN;
     }
 
     public RunMetadata(String name, int numSegments, List<RunHistoryListener> runHistoryListeners) {
@@ -39,7 +45,10 @@ public class RunMetadata {
             segmentNames.add(null);
         }
         displayBestSegments = false;
+        displayRunDelta = false;
         this.runHistoryListeners = runHistoryListeners;
+        deltaDisplayMode = RunHistoryListener.DeltaDisplayMode.BEST_RUN;
+        splitDisplayMode = RunHistoryListener.SplitDisplayMode.BEST_RUN;
     }
 
     public String getSegmentName(int splitNum) {
@@ -52,7 +61,7 @@ public class RunMetadata {
 
     public void setSegmentName(final int segmentNum, final String name) {
         segmentNames.set(segmentNum, name);
-        notifyListeners(new AbstractRunHistoryChange(){
+        notifyListeners(new AbstractRunHistoryChange(this){
             @Override
             public RunHistoryListener.RunHistoryEventType getChangeType() {
                 return RunHistoryListener.RunHistoryEventType.SEGMENT_NAME_CHANGE;
@@ -76,7 +85,7 @@ public class RunMetadata {
 
     public void setSegmentImageUri(final int segmentNum, final String uri) {
         segmentImageUris.set(segmentNum, uri);
-        notifyListeners(new AbstractRunHistoryChange() {
+        notifyListeners(new AbstractRunHistoryChange(this) {
             @Override
             public RunHistoryListener.RunHistoryEventType getChangeType() {
                 return RunHistoryListener.RunHistoryEventType.SEGMENT_IMAGE_CHANGE;
@@ -89,25 +98,6 @@ public class RunMetadata {
 
             public String getNewSegmentImageUri() {
                 return uri;
-            }
-        });
-    }
-
-    public boolean displayBestSegments() {
-        return displayBestSegments;
-    }
-
-    public void setDisplayBestSegments(final boolean displayBestSegments) {
-        this.displayBestSegments = displayBestSegments;
-        notifyListeners(new AbstractRunHistoryChange() {
-            @Override
-            public RunHistoryListener.RunHistoryEventType getChangeType() {
-                return RunHistoryListener.RunHistoryEventType.DISPLAY_MODE_CHANGE;
-            }
-
-            @Override
-            public boolean isDisplayBestSegments() {
-                return displayBestSegments;
             }
         });
     }
@@ -130,7 +120,7 @@ public class RunMetadata {
 
     public void setRunName(String newRunName) {
         this.runName = newRunName;
-        notifyListeners(new AbstractRunHistoryChange() {
+        notifyListeners(new AbstractRunHistoryChange(this) {
             @Override
             public RunHistoryListener.RunHistoryEventType getChangeType() {
                 return RunHistoryListener.RunHistoryEventType.RUN_NAME_CHANGE;
@@ -146,5 +136,33 @@ public class RunMetadata {
         for (RunHistoryListener listener : runHistoryListeners) {
             listener.onChanged(change);
         }
+    }
+
+    public RunHistoryListener.DeltaDisplayMode getDeltaDisplayMode() {
+        return deltaDisplayMode;
+    }
+
+    public void setDeltaDisplayMode(RunHistoryListener.DeltaDisplayMode deltaDisplayMode) {
+        this.deltaDisplayMode = deltaDisplayMode;
+        notifyListeners(new AbstractRunHistoryChange(this) {
+            @Override
+            public RunHistoryListener.RunHistoryEventType getChangeType() {
+                return RunHistoryListener.RunHistoryEventType.DISPLAY_DELTA_MODE_CHANGE;
+            }
+        });
+    }
+
+    public RunHistoryListener.SplitDisplayMode getSplitDisplayMode() {
+        return splitDisplayMode;
+    }
+
+    public void setSplitDisplayMode(RunHistoryListener.SplitDisplayMode splitDisplayMode) {
+        this.splitDisplayMode = splitDisplayMode;
+        notifyListeners(new AbstractRunHistoryChange(this) {
+            @Override
+            public RunHistoryListener.RunHistoryEventType getChangeType() {
+                return RunHistoryListener.RunHistoryEventType.DISPLAY_SPLIT_MODE_CHANGE;
+            }
+        });
     }
 }

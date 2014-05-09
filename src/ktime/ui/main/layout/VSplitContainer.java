@@ -22,23 +22,12 @@ import java.util.List;
  */
 public class VSplitContainer implements SplitContainer{
     List<SegmentDisplay> segments;
+    SplitTimes displayedRun;
     VBox content;
 
     public VSplitContainer() {
         content = new VBox();
         segments = new ArrayList<SegmentDisplay>();
-    }
-
-    @Override
-    public void setActualSegmentTime(int segmentIndex, Long time) {
-        segments.get(segmentIndex).setActualSegmentTime(time);
-        segments.get(segmentIndex).displayLastRunDelta();
-    }
-
-    @Override
-    public void setActualSegmentEnd(int segmentIndex, Long time) {
-        segments.get(segmentIndex).setActualSegmentEnd(time);
-        segments.get(segmentIndex).displayLastRunDelta();
     }
 
     @Override
@@ -54,20 +43,14 @@ public class VSplitContainer implements SplitContainer{
     @Override
     public void setRunHistory(RunHistory runHistory) {
         clearSegments();
-        SplitTimes oldSplits;
         RunMetadata runMetadata = runHistory.getRunMetadata();
-        if(runMetadata.displayBestSegments())
-            oldSplits = runHistory.getBestSplitTimes();
-        else
-            oldSplits = runHistory.getBestRunTimes();
+        displayedRun = runHistory.getSplitsToDisplay();
         for(int i = 0; i < runMetadata.getNumSegments(); i++) {
             SegmentDisplay segmentDisplay = new DefaultSegmentDisplay();
             segmentDisplay.setName(runMetadata.getSegmentName(i));
             segmentDisplay.setImageUri(runMetadata.getSegmentImageUri(i));
-            if(oldSplits != null) {
-                segmentDisplay.setLastSegmentTime(oldSplits.getSegmentTime(i));
-                segmentDisplay.setLastSegmentEnd(oldSplits.getSegmentEndTime(i));
-                segmentDisplay.displayLastRunTimes();
+            if(displayedRun != null) {
+                segmentDisplay.setDisplayTime(displayedRun.getSegmentEndTime(i), null);
             }
             addSegment(segmentDisplay);
         }
@@ -84,42 +67,22 @@ public class VSplitContainer implements SplitContainer{
         segments.clear();
     }
 
+    private void resetSegments() {
+        if(displayedRun != null) {
+            for(int i = 0; i < segments.size(); i++) {
+                segments.get(i).setDisplayTime(displayedRun.getSegmentEndTime(i), null);
+            }
+        }
+
+    }
+
     @Override
     public void reset() {
-        for(SegmentDisplay segmentDisplay : segments) {
-            segmentDisplay.setActualSegmentTime(null);
-            segmentDisplay.setActualSegmentEnd(null);
-            segmentDisplay.displayLastRunTimes();
-        }
     }
 
     @Override
     public Node getNode() {
         return content;
-    }
-
-    @Override
-    public StopwatchListener getStopwatchListener() {
-        return new StopwatchListener() {
-            @Override
-            public void onChanged(Change change) {
-                switch (change.getChangeType()) {
-                    case STOP:
-                    case SPLIT:
-                    case SKIPSPLIT:
-                    case UNSPLIT:
-                        setActualSegmentTime(change.getChangedSplit()-1, change.getNewSegmentTime());
-                        setActualSegmentEnd(change.getChangedSplit()-1, change.getNewSplitTime());
-                        break;
-                    case START:
-                    case RESET:
-                        System.out.println("Resetting container");
-                        reset();
-                        break;
-
-                }
-            }
-        };
     }
 
     @Override
@@ -132,13 +95,22 @@ public class VSplitContainer implements SplitContainer{
                         if(change.wasBestRun()) {
                             setLastSegmentTimes(change.getNewAttempt());
                         }
-                        //TODO: update appropriate splits times with best split times if needed.
                         break;
-                    case DISPLAY_MODE_CHANGE:
-                        if(change.isDisplayBestSegments()) {
-                            setLastSegmentTimes(change.getNewBestSplits());
-                        } else {
-                            setLastSegmentTimes(change.getNewAttempt());
+                    case DISPLAY_DELTA_MODE_CHANGE:
+                        switch(change.getDeltaDisplayMode()) {
+                            case BEST_RUN:
+                            case BEST_SEGMENTS:
+                            case NONE:
+                        }
+                        break;
+                    case DISPLAY_SPLIT_MODE_CHANGE:
+                        switch(change.getSplitDisplayMode()) {
+                            case BEST_SEGMENTS:
+                                setLastSegmentTimes(change.getNewBestSplits());
+                                break;
+                            case BEST_RUN:
+                                setLastSegmentTimes(change.getNewAttempt());
+                                break;
                         }
                         break;
                     case RESET_ATTEMPTS:
@@ -157,11 +129,58 @@ public class VSplitContainer implements SplitContainer{
         };
     }
 
+    @Override
+    public StopwatchListener getStopwatchListener() {
+        return new StopwatchListener() {
+            @Override
+            public void onChanged(Change change) {
+                switch (change.getChangeType()) {
+                    case START:
+                        break;
+                    case RESET:
+                        resetSegments();
+                        break;
+                    case STOP:
+                    case SPLIT: {
+                        int changedSegment = change.getChangedSplit() - 1;
+                        Long runDelta = change.getNewSplitTime() - displayedRun.getSegmentEndTime(changedSegment);
+                        Long segmentDelta = change.getNewSegmentTime() - displayedRun.getSegmentTime(changedSegment);
+                        String displayStyle = computeSplitStyleClass(segmentDelta, runDelta);
+                        segments.get(changedSegment).setDisplayTime(runDelta, displayStyle);
+                        break;
+                    } case UNSPLIT: {
+                        int changedSegment = change.getChangedSplit() - 1;
+                        segments.get(changedSegment).setDisplayTime(displayedRun.getSegmentEndTime(changedSegment), null);
+                        break;
+                    } case SKIPSPLIT: {
+                        int changedSegment = change.getChangedSplit() - 1;
+                        segments.get(changedSegment).setDisplayTime(displayedRun.getSegmentEndTime(changedSegment), null);
+                        break;
+                    }
+                }
+            }
+        };
+    }
+
+
+    private String computeSplitStyleClass(Long segmentDelta, Long runDelta) {
+        if(segmentDelta == null || runDelta == null)
+            return null; //No styling.
+        if(segmentDelta > 0 && runDelta > 0)
+            return "positiveRunPositiveSeg";
+        else if(segmentDelta > 0 && runDelta < 0)
+            return "positiveRunNegativeSeg";
+        else if(segmentDelta < 0 && runDelta > 0)
+            return "negativeRunPositiveSeg";
+//        if(segmentDelta < 0 && runDelta < 0)
+        else
+            return "negativeRunNegativeSeg";
+
+    }
+
     private void setLastSegmentTimes(SplitTimes timesToUse) {
         for (int i = 0; i < timesToUse.getNumSegments(); i++) {
-            segments.get(i).setLastSegmentEnd(timesToUse.getSegmentEndTime(i));
-            segments.get(i).setLastSegmentTime(timesToUse.getSegmentTime(i));
-            segments.get(i).displayLastRunTimes();
+            segments.get(i).setDisplayTime(timesToUse.getSegmentEndTime(i), null);
         }
     }
 

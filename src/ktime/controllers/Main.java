@@ -44,6 +44,7 @@ public class Main extends Application {
         detailedSplit.setRunHistory(runHistory);
         stopwatch.addListener(runHistory.getStopwatchListener());
         stopwatch.addListener(splitContainer.getStopwatchListener());
+        stopwatch.addListener(detailedSplit.getStopwatchListener());
         runHistory.addListener(splitContainer.getRunHistoryListener());
         runHistory.addListener(titleBar.getRunHistoryListener());
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {

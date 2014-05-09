@@ -136,7 +136,6 @@ public class VSplitContainer implements SplitContainer{
             public void onChanged(Change change) {
                 switch (change.getChangeType()) {
                     case START:
-                        break;
                     case RESET:
                         resetSegments();
                         break;

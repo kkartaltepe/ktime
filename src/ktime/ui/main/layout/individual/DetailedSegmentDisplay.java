@@ -3,6 +3,7 @@ package ktime.ui.main.layout.individual;
 import javafx.scene.Node;
 import ktime.data.RunHistory;
 import ktime.data.RunHistoryListener;
+import ktime.utils.stopwatch.StopwatchListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,4 +19,5 @@ public interface DetailedSegmentDisplay {
     Node getNode();
 
     RunHistoryListener getRunHistoryListener();
+    StopwatchListener getStopwatchListener();
 }

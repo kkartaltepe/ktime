@@ -7,6 +7,7 @@ import javafx.scene.text.Text;
 import ktime.data.RunHistory;
 import ktime.data.RunHistoryListener;
 import ktime.utils.TimeFormatter;
+import ktime.utils.stopwatch.StopwatchListener;
 
 import java.io.IOException;
 
@@ -40,6 +41,7 @@ public class DefaultDetailedSegmentDisplay implements DetailedSegmentDisplay {
     @Override
     public void setRunHistory(RunHistory history) {
         this.history = history;
+
     }
 
     @Override
@@ -83,6 +85,27 @@ public class DefaultDetailedSegmentDisplay implements DetailedSegmentDisplay {
                         DefaultDetailedSegmentDisplay.this.bestSegmentTime.setText(TimeFormatter.format(history.getBestRunTimes().getSegmentTime(change.getChangedSplit() - 1)));
                         break;
                 }
+            }
+        };
+    }
+
+    public StopwatchListener getStopwatchListener() {
+        return new StopwatchListener() {
+            @Override
+            public void onChanged(Change change) {
+                switch (change.getChangeType()) {
+                    case START:
+                    case RESET:
+                        bestSegmentTime.setText(TimeFormatter.format(history.getBestRunTimes().getSegmentTime(0)));
+                        break;
+                    case STOP:
+                    case SPLIT:
+                    case UNSPLIT:
+                    case SKIPSPLIT:
+                        bestSegmentTime.setText(TimeFormatter.format(history.getBestRunTimes().getSegmentTime(change.getChangedSplit()-1)));
+                        break;
+                }
+
             }
         };
     }

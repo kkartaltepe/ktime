@@ -23,6 +23,7 @@ import java.util.List;
 public class VSplitContainer implements SplitContainer{
     List<SegmentDisplay> segments;
     SplitTimes displayedRun;
+    int activeSegment = 0;
     VBox content;
 
     public VSplitContainer() {
@@ -134,28 +135,39 @@ public class VSplitContainer implements SplitContainer{
         return new StopwatchListener() {
             @Override
             public void onChanged(Change change) {
+                activeSegment = change.getChangedSplit();
+                int completedSegment = activeSegment-1;
+
                 switch (change.getChangeType()) {
                     case START:
-                    case RESET:
+                        segments.get(activeSegment).activate();
                         resetSegments();
                         break;
+                    case RESET:
+                        segments.get(activeSegment).deactivate();
+                        resetSegments();
+                        break;
+                    case SPLIT:
+                        segments.get(activeSegment).activate();
                     case STOP:
-                    case SPLIT: {
-                        int changedSegment = change.getChangedSplit() - 1;
-                        Long runDelta = change.getNewSplitTime() - displayedRun.getSegmentEndTime(changedSegment);
-                        Long segmentDelta = change.getNewSegmentTime() - displayedRun.getSegmentTime(changedSegment);
+                        segments.get(completedSegment).deactivate();
+                        Long runDelta = change.getNewSplitTime() - displayedRun.getSegmentEndTime(completedSegment);
+                        Long segmentDelta = change.getNewSegmentTime() - displayedRun.getSegmentTime(completedSegment);
                         String displayStyle = computeSplitStyleClass(segmentDelta, runDelta);
-                        segments.get(changedSegment).setDisplayTime(runDelta, displayStyle);
+                        segments.get(completedSegment).setDisplayTime(runDelta, displayStyle);
                         break;
-                    } case UNSPLIT: {
-                        int changedSegment = change.getChangedSplit() - 1;
-                        segments.get(changedSegment).setDisplayTime(displayedRun.getSegmentEndTime(changedSegment), null);
+                    case UNSPLIT:
+                        segments.get(activeSegment).deactivate();
+                        activeSegment--;
+                        segments.get(completedSegment).setDisplayTime(displayedRun.getSegmentEndTime(completedSegment), null);
+                        segments.get(activeSegment).activate();
                         break;
-                    } case SKIPSPLIT: {
-                        int changedSegment = change.getChangedSplit() - 1;
-                        segments.get(changedSegment).setDisplayTime(displayedRun.getSegmentEndTime(changedSegment), null);
+                    case SKIPSPLIT:
+                        segments.get(completedSegment).deactivate();
+                        segments.get(completedSegment).setDisplayTime(displayedRun.getSegmentEndTime(completedSegment), null);
+                        segments.get(activeSegment).activate();
                         break;
-                    }
+
                 }
             }
         };

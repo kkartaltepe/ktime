@@ -74,10 +74,11 @@ public class Main extends Application {
                     primaryStage.close();
                 }
                 if (keyEvent.getCode() == KeyCode.S) {
-                    Stage settingsStage = new Stage();
-                    settingsStage.setScene(settingsWindow.getScene());
-                    settingsStage.setTitle("Settings");
-                    settingsStage.show();
+                    stopwatch.skipSplit();
+//                    Stage settingsStage = new Stage();
+//                    settingsStage.setScene(settingsWindow.getScene());
+//                    settingsStage.setTitle("Settings");
+//                    settingsStage.show();
                 }
                 if (keyEvent.getCode() == KeyCode.A) {
                     stopwatch.reset();

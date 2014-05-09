@@ -1,7 +1,10 @@
 package ktime.ui.settings;
 
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
+import javafx.scene.Scene;
+
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,8 +15,20 @@ import javafx.scene.control.Label;
  */
 public class SettingsWindow {
 
+    private Scene scene;
+    private Parent root;
 
-    public Parent getNode() {
-        return new Label("settings window goes here");
+    public SettingsWindow() {
+        try {
+            root = FXMLLoader.load(getClass().getResource("settingsWindow.fxml"));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load settings fxml");
+        }
+        scene = new Scene(root, 100,100);
+        scene.getStylesheets().add("ktime/controllers/test.css");
+    }
+
+    public Scene getScene() {
+        return scene;
     }
 }

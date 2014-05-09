@@ -75,7 +75,8 @@ public class Main extends Application {
                 }
                 if (keyEvent.getCode() == KeyCode.S) {
                     Stage settingsStage = new Stage();
-                    settingsStage.setScene(new Scene(settingsWindow.getNode()));
+                    settingsStage.setScene(settingsWindow.getScene());
+                    settingsStage.setTitle("Settings");
                     settingsStage.show();
                 }
                 if (keyEvent.getCode() == KeyCode.A) {
